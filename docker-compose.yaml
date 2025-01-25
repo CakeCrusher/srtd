@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.28.4
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - --scheme
+      - '8080'
+      - http
+    environment:
+      - QUERY_DEFAULTS_LIMIT=${QUERY_DEFAULTS_LIMIT}
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=${AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED}
+      - PERSISTENCE_DATA_PATH=${PERSISTENCE_DATA_PATH}
+      - DEFAULT_VECTORIZER_MODULE=${DEFAULT_VECTORIZER_MODULE}
+      - ENABLE_API_BASED_MODULES=${ENABLE_API_BASED_MODULES}
+      - CLUSTER_HOSTNAME=${CLUSTER_HOSTNAME}
+      - ENABLE_MODULES=${ENABLE_MODULES}
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    # healthcheck:
+    #   test: ["CMD", "wget --no-verbose --tries=3 --spider http://localhost:8080/v1/.well-known/live || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+
+volumes:
+  weaviate_data:
