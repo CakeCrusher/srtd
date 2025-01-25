@@ -26,10 +26,7 @@ def buildFileList(source_dir):
                 'path': entry.path,
                 'name': entry.name,
                 'is_dir': entry.is_dir(),
-
-                # format of metadata field
-                # https://docs.python.org/3/library/os.html#os.stat_result
-                'metadata': entry.stat()
+                'created_at': entry.stat().st_ctime
             }
 
             file_list.append(file_info)
