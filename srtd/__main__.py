@@ -11,7 +11,7 @@ def main(args=None):
         print("Please provide a directory as a command line argument. Exiting.")
         return -1
 
-    core.buildFileTree(source_dir)
+    core.buildFileList(source_dir)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

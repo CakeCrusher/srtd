@@ -15,12 +15,13 @@ def buildFileList(source_dir):
 
     file_list = [];
 
-
     # get directory object
     with os.scandir(os.path.abspath(source_dir)) as entries:
         for entry in entries:
-            print(entry.name)
-            # TODO: refine what goes into one of these objects
+            # skip symlinks because they break stuff
+            if (entry.is_symlink()):
+                continue
+
             file_info = {
                 'path': entry.path,
                 'name': entry.name,
@@ -30,4 +31,7 @@ def buildFileList(source_dir):
                 # https://docs.python.org/3/library/os.html#os.stat_result
                 'metadata': entry.stat()
             }
+
             file_list.append(file_info)
+
+    return file_list
