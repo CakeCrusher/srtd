@@ -5,9 +5,6 @@ import core
 
 
 def main(args=None):
-    print("Running srtd...")
-
-    print(f"args are {args}")
     if args and len(args) > 0:
         source_dir = args[0]
     else:
