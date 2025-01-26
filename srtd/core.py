@@ -59,13 +59,15 @@ def _read_pdf_content(file_path: str, max_chars: int) -> str:
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:
+    source_dir = os.path.expanduser(source_dir)
+
     # verify path passed in
     if not os.path.exists(source_dir):
         print(f"Path \"{source_dir}\" doesn't exist")
-        return
+        return []
     if not os.path.isdir(source_dir):
         print(f"Path \"{source_dir}\" is not a directory")
-        return
+        return []
 
     file_list = []
 
@@ -84,7 +86,6 @@ def buildFileList(source_dir) -> List[FileObject]:
 def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
     dir_list = []
 
-    print("dir to investigate: ", dir)
     if curr_depth > max_depth:
         return []
     # get directory object
@@ -95,7 +96,6 @@ def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
                 if (entry.is_symlink() or not entry.is_dir()):
                     continue
 
-                print(entry.name)
                 # only append the path to the list because that's all that we care about
                 dir_list.append(objectify(entry))
 
@@ -111,9 +111,7 @@ def buildDestinationList(allowed_dests: list[str]) -> list[FileObject]:
 
     for dest in allowed_dests:
         dest = os.path.expanduser(dest)
-        print(f"allowed dest is {dest}")
         if os.path.isdir(dest):
-            print("expanded")
             destination_list.extend(destinationHelper(dest, 0))
 
     return destination_list

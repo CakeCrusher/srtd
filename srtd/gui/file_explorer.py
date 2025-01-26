@@ -317,18 +317,15 @@ class FileExplorer(QWidget):
         if not selected_dir:
             print("Please enter a source directory path")
             return
-        res = buildFileList(selected_dir)
-        
+        res = buildFileList(selected_dir)        
         semantic_upload = SemanticFileUploading()
         semantic_upload.upload_files(res)
-        
 
-
-        
-        if res is None:
+        if len(res) == 0:
+            print("Source folder not updated.")
             return
         self.source_list = res
-        print(f"Length of source list: {len(self.source_list)}")
+        self.source_tree.rerender_tree_layout(self.source_list)
         print(f"Source directory updated to: {selected_dir}")
 
 
