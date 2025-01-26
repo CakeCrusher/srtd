@@ -20,7 +20,7 @@ import os
 from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches
-from .file_view import create_file_tree_scroll_view
+from .file_view import FileTreeScrollView
 
 from .themes import *
 
@@ -57,8 +57,8 @@ class FileExplorer(QWidget):
         file_layout.addLayout(source_selection_layout)
 
         # Create file tree view using the source list
-        file_layout.addWidget(create_file_tree_scroll_view(self.source_list,
-                                                           bg_color_stylesheet=PastelYellow().get_style_sheet()))
+        file_layout.addWidget(FileTreeScrollView(self.source_list,
+                        PastelYellow().get_style_sheet()))
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -133,7 +133,7 @@ class FileExplorer(QWidget):
         # get list of destinations for use
         destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
 
-        lex_layout.addWidget(create_file_tree_scroll_view(destination_list, show_path=True))
+        lex_layout.addWidget(FileTreeScrollView(destination_list, show_path=True))
         # context_layout.addWidget(create_file_tree_scroll_view())
 
         suggestions_content_layout.addWidget(lex_box)
