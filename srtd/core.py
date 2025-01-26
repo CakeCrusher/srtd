@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import shutil
 from pathlib import Path
 from typing import List, Optional
 from .schema import FileObject
@@ -116,3 +117,25 @@ def buildDestinationList(allowed_dests: list[str]) -> list[FileObject]:
             destination_list.extend(destinationHelper(dest, 0))
 
     return destination_list
+
+# take a collection of file objects and move them to a destination
+def move_files(selected_files: list[FileObject], destination: FileObject) -> int:
+
+    # Loop through the list of files and move each one
+    for file in selected_files:
+        # Construct the destination file path
+        destination_path = os.path.join(destination.path, file.name)
+        # Move the file
+        try:
+            # shutil.move(file.path, destination_path)
+            print(f"Moved {file.path} to {destination_path}")
+            return 0
+        except FileNotFoundError:
+            print("The source file does not exist.")
+        except PermissionError:
+            print("Permission denied.")
+        except Exception as e:
+            print(f"Failed to move {file.path}: {str(e)}")
+
+        # return -1 if failed
+        return -1

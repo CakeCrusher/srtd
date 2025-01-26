@@ -23,6 +23,9 @@
               pyside6
               thefuzz
               pydantic
+              weaviate-client
+              openai
+              python-dotenv
             ]
           ))
         ];

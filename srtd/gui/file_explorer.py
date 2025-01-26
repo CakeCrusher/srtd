@@ -29,6 +29,7 @@ from .themes import *
 class FileExplorer(QWidget):
     def __init__(self, app, theme=Sand()):
         super().__init__()
+        self.dest_directory_text = None
         self.app = app
         self.theme = theme
 
@@ -41,6 +42,7 @@ class FileExplorer(QWidget):
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         self.semantic_source_list = []
+
         # Create file tree view
         file_layout = QVBoxLayout()
         # Create source selection area
@@ -59,9 +61,24 @@ class FileExplorer(QWidget):
         file_layout.addLayout(source_selection_layout)
 
         # Create file tree view using the source list
-        file_layout.addWidget(FileTreeScrollView(self.source_list,
-                        PastelYellow().get_style_sheet()))
+        self.source_tree = FileTreeScrollView(self.source_list,
+                        PastelYellow().get_style_sheet())
+        file_layout.addWidget(self.source_tree)
 
+
+        # todo implement filter below the file view
+        source_filter_layout = QHBoxLayout()
+        source_selection_label = QLabel("Filter Source Files:")
+        self.source_filter_edit = QLineEdit()
+
+        ## Todo as we type, sort matching files to the bottom of the list
+        # todo is this function the correct choice here?
+        self.source_filter_edit.textChanged.connect(self.on_source_filt_changed)
+
+        source_filter_layout.addWidget(source_selection_label)
+        source_filter_layout.addWidget(self.source_filter_edit)
+
+        file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
         # Create file preview area
         preview_layout = QVBoxLayout()
@@ -116,7 +133,7 @@ class FileExplorer(QWidget):
         # Create suggestion boxes
         lex_box = QWidget()
         # context_box = QWidget()
-        lex_layout = QVBoxLayout(lex_box)
+        dest_layout = QVBoxLayout(lex_box)
         # context_layout = QVBoxLayout(context_box)
 
         # Add titles for suggestion boxes
@@ -129,14 +146,14 @@ class FileExplorer(QWidget):
         lex_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
         # context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
 
-        lex_layout.addWidget(lex_title)
+        dest_layout.addWidget(lex_title)
         # context_layout.addWidget(context_title)
 
         # get list of destinations for use
-        destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
-
-        lex_layout.addWidget(FileTreeScrollView(destination_list, show_path=True))
-        # context_layout.addWidget(create_file_tree_scroll_view())
+        self.dest_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
+        self.dest_view = FileTreeScrollView(self.dest_list, show_path=True, has_checkboxes=False)
+        self.dest_view.file_clicked.connect(self.show_confirmation_window)
+        dest_layout.addWidget(self.dest_view)
 
         suggestions_content_layout.addWidget(lex_box)
         # suggestions_content_layout.addWidget(context_box)
@@ -150,28 +167,27 @@ class FileExplorer(QWidget):
 
         # Search bar layout
         search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Files:")
-        self.search_bar = QLineEdit()
-        search_button = QPushButton("Select Destination")
+        search_label = QLabel("Filter Dest Files:")
+        self.dest_bar = QLineEdit()
+        
         semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
-        search_layout.addWidget(self.search_bar)
+
+        search_layout.addWidget(self.dest_bar)
         search_layout.addWidget(semantic_search_button)
-        search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
 
         # Connect search bar changes
-        self.search_bar.textChanged.connect(self.on_text_changed)
+        self.dest_bar.textChanged.connect(self.on_dest_text_changed)
 
         # handle semantic search button changes
         semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
 
-        # Create checkbox
-        # Connect search button click to show message box
-
-        search_button.clicked.connect(self.show_confirmation_window)
+        # Connect search button to show confirmation window
+        # TODO make each of the files a button to connect
+        # search_button.clicked.connect(self.show_confirmation_window)
 
         # Add layouts to the main layout
         self.main_layout.addLayout(file_layout, 4)
@@ -196,7 +212,7 @@ class FileExplorer(QWidget):
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
-    def show_confirmation_window(self):
+    def show_confirmation_window(self, file_name):
         if self.confirmation_window and self.confirmation_window.isVisible():
             self.confirmation_window.raise_()
             self.confirmation_window.activateWindow()
@@ -212,7 +228,8 @@ class FileExplorer(QWidget):
         lex_suggestion_label.setFixedHeight(25)
         lex_suggestion_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         lex_suggestion_label.setStyleSheet(
-            ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;")
+            ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;"
+        )
 
         window_layout.addLayout(lex_suggestion_layout)
         suggestion_content_layout = QHBoxLayout()
@@ -223,7 +240,8 @@ class FileExplorer(QWidget):
         content_widget = QtWidgets.QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        suggestion_content_text = QtWidgets.QLabel("File one\nFile two\nFile three\nFile four\n")
+        suggestion_content_text = QtWidgets.QLabel(
+            "Files to move will appear here (future enhancement).")
         suggestion_content_text.setWordWrap(True)
         suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
         suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -245,10 +263,11 @@ class FileExplorer(QWidget):
         dest_directory_image.setStyleSheet("font-size: 48px;")
         dest_directory_layout.addWidget(dest_directory_image)
 
-        dest_directory_text = QtWidgets.QLabel("Destination Directory TODO:")
-        dest_directory_text.setWordWrap(True)
-        dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
-        dest_directory_layout.addWidget(dest_directory_text)
+        # Update the destination directory text with the clicked file name
+        self.dest_directory_text = QtWidgets.QLabel(f"Destination Directory: {file_name}")
+        self.dest_directory_text.setWordWrap(True)
+        self.dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
+        dest_directory_layout.addWidget(self.dest_directory_text)
 
         suggestion_content_layout.addLayout(dest_directory_layout, 2)
 
@@ -256,15 +275,12 @@ class FileExplorer(QWidget):
 
         button_layout = QHBoxLayout()
         ok_button = QPushButton("Ok")
-        yes_to_all_button = QPushButton("Yes to All")
         cancel_button = QPushButton("Cancel")
 
-        ok_button.clicked.connect(self.on_ok_clicked)
-        yes_to_all_button.clicked.connect(self.on_yes_to_all_clicked)
+        ok_button.clicked.connect(self.on_yes_to_all_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         button_layout.addWidget(ok_button)
-        button_layout.addWidget(yes_to_all_button)
         button_layout.addWidget(cancel_button)
 
         window_layout.addLayout(button_layout)
@@ -277,11 +293,8 @@ class FileExplorer(QWidget):
     def reset_confirmation_window(self):
         self.confirmation_window = None
 
-    def on_ok_clicked(self):
-        print("Ok button clicked")
-
     def on_yes_to_all_clicked(self):
-        print("Yes to All button clicked")
+        print("Ok button clicked")
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
@@ -289,12 +302,15 @@ class FileExplorer(QWidget):
     def on_message_box_result(self):
         self.show_confirmation_window()
 
-    def on_text_changed(self):
-        target = self.search_bar.text()
+    def on_source_filt_changed(self):
+        target = self.source_filter_edit.text()
         self.source_list = getMatches(target, self.source_list)
-        cls()
-        print("\n".join(stringify_file_list(self.source_list)))
-        print("> ", target)
+        self.source_tree.rerender_tree_layout(self.source_list)
+
+    def on_dest_text_changed(self):
+        target = self.dest_bar.text()
+        self.dest_list = getMatches(target, self.dest_list)
+        self.dest_view.rerender_tree_layout(self.dest_list)
 
     def on_source_folder_selected(self, source_dir):
         selected_dir = source_dir.strip()
