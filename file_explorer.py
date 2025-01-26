@@ -43,6 +43,7 @@ class FileExplorer(QWidget):
 
         # Add title
         preview_title = QLabel("Preview & Summary")
+        preview_title.setFixedHeight(25)
         preview_title.setStyleSheet(Sand().get_style_sheet())
 
         # Create preview content area
@@ -81,6 +82,7 @@ class FileExplorer(QWidget):
         # Add everything to main preview layout
         preview_layout.addWidget(preview_title)
         preview_layout.addWidget(preview_content)
+        preview_content.setMaximumHeight(240)
 
 
         # Combine preview and search into a single layout
