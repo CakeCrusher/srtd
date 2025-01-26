@@ -22,6 +22,7 @@ from srtd.semantic_file_uploading import SemanticFileUploading
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
+from ..semantic_file_matching import test
 
 from .themes import *
 

@@ -2,9 +2,9 @@
 
 import os
 from pathlib import Path
-from typing import List
-from schema import FileObject
-import magic
+from typing import List, Optional
+from .schema import FileObject
+import PyPDF2
 
 def objectify(entry: os.DirEntry) -> FileObject:
         return FileObject(
@@ -16,25 +16,45 @@ def objectify(entry: os.DirEntry) -> FileObject:
             string_content_truncated=create_truncated_content(entry.path)
         )
 
-def create_truncated_content(file_path: str) -> str:
+def create_truncated_content(file_path: str, max_chars: int = 2000) -> str:
+    """Get truncated content from a file, supporting text and PDF files"""
+    if not os.path.exists(file_path):
+        return "[File not found]"
+        
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
     try:
-        with open(file_path, "r") as f:
-            lines = f.readlines()[:1000]
-            truncated_content = "".join(lines)
-
-        mime_type = magic.from_file(file_path, mime=True)
-
-        if mime_type == "text/plain":
-            summary = truncated_content
+        if file_ext == '.pdf':
+            return _read_pdf_content(file_path, max_chars)
         else:
-            summary = f"File of type {mime_type}"
-
-        return summary
-
-    except FileNotFoundError:
-        return f"File {file_path} not found"
+            return _read_text_content(file_path, max_chars)
     except Exception as e:
-        return f"An error occurred: {str(e)}"
+        return f"[Error reading file: {str(e)}]"
+
+def _read_text_content(file_path: str, max_chars: int) -> str:
+    """Read content from text files"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read(max_chars)
+            if len(content) == max_chars:
+                content += "..."
+            return content
+    except UnicodeDecodeError:
+        return "[Binary file]"
+
+def _read_pdf_content(file_path: str, max_chars: int) -> str:
+    """Read content from PDF files"""
+    try:
+        with open(file_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            content = ""
+            for page in reader.pages:
+                content += page.extract_text()
+                if len(content) >= max_chars:
+                    return content[:max_chars] + "..."
+            return content
+    except Exception:
+        return "[Error reading PDF]"
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:

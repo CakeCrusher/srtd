@@ -11,9 +11,9 @@ from .schema import FileObject
 from .openai_client import OpenAIClient
 from dotenv import load_dotenv
 
-from schema import FileObject
-from openai_client import OpenAIClient
-from core import create_truncated_content
+from .schema import FileObject
+from .openai_client import OpenAIClient
+from .core import create_truncated_content
 load_dotenv()
 
 class WeaviateClient:
@@ -85,6 +85,7 @@ class WeaviateClient:
             openai_client = OpenAIClient()
             file.string_content_truncated = create_truncated_content(file.path)
             file.ai_summary = openai_client.file_summary(file)
+            print(f"File summary: {file.ai_summary}")
             return self.upload_file(file)
 
     def semantic_search(self, query: str, limit: int = 10) -> List[tuple[FileObject, float]]:
