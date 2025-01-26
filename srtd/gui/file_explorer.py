@@ -24,6 +24,7 @@ from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
+from ..core import move_files
 
 
 class FileExplorer(QWidget):
@@ -65,18 +66,22 @@ class FileExplorer(QWidget):
                         PastelYellow().get_style_sheet())
         file_layout.addWidget(self.source_tree)
 
-
         # todo implement filter below the file view
         source_filter_layout = QHBoxLayout()
         source_selection_label = QLabel("Filter Source Files:")
-        self.source_filter_edit = QLineEdit()
+        self.source_filter_textbox = QLineEdit()
 
         ## Todo as we type, sort matching files to the bottom of the list
         # todo is this function the correct choice here?
-        self.source_filter_edit.textChanged.connect(self.on_source_filt_changed)
+        self.source_filter_textbox.textChanged.connect(self.on_source_filt_changed)
+
+        semantic_search_button = QPushButton("Semantic Search")
+        # handle semantic search button changes
+        semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
 
         source_filter_layout.addWidget(source_selection_label)
-        source_filter_layout.addWidget(self.source_filter_edit)
+        source_filter_layout.addWidget(self.source_filter_textbox)
+        source_filter_layout.addWidget(semantic_search_button)
 
         file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
@@ -166,18 +171,17 @@ class FileExplorer(QWidget):
         right_column_layout.addLayout(suggestions_layout)
 
         # Search bar layout
-        search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Dest Files:")
+        dest_filter_layout = QHBoxLayout()
+        dest_filter_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
-        
-        semantic_search_button = QPushButton("Semantic Search")
-        search_layout.addWidget(search_label)
 
-        search_layout.addWidget(self.dest_bar)
-        search_layout.addWidget(semantic_search_button)
+        semantic_search_button = QPushButton("Semantic Search")
+        dest_filter_layout.addWidget(dest_filter_label)
+
+        dest_filter_layout.addWidget(self.dest_bar)
 
         # Add search bar layout
-        right_column_layout.addLayout(search_layout)
+        right_column_layout.addLayout(dest_filter_layout)
 
         # Connect search bar changes
         self.dest_bar.textChanged.connect(self.on_dest_text_changed)
@@ -208,7 +212,7 @@ class FileExplorer(QWidget):
             print("Checkbox is checked")
 
     def on_semantic_search_clicked(self):
-        target = self.dest_bar.text()
+        target = self.source_filter_textbox.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
@@ -231,6 +235,8 @@ class FileExplorer(QWidget):
             ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;"
         )
 
+        self.confirmation_window.resize(500, 500)  # Larger size
+
         window_layout.addLayout(lex_suggestion_layout)
         suggestion_content_layout = QHBoxLayout()
 
@@ -240,12 +246,26 @@ class FileExplorer(QWidget):
         content_widget = QtWidgets.QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        suggestion_content_text = QtWidgets.QLabel(
-            "Files to move will appear here (future enhancement).")
-        suggestion_content_text.setWordWrap(True)
-        suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
-        suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        content_layout.addWidget(suggestion_content_text)
+        # Get the list of checked files
+        checked_files = self.source_tree.get_checked_files()
+
+        if not checked_files:
+            QMessageBox.warning(self, "No Files Selected",
+                                "Please select files to move before proceeding.")
+            return
+
+        # Create a formatted string where each file appears on a new line
+        suggestion_content_text = "\n".join([f"📄 {file.name}" for file in checked_files])
+
+        # Create the label with formatted file names
+        suggestion_content_text_label = QtWidgets.QLabel(
+            f"The following files will be moved to the destination directory:\n{suggestion_content_text}"
+        )
+        suggestion_content_text_label.setWordWrap(True)
+        suggestion_content_text_label.setStyleSheet(PastelGreen().get_style_sheet())
+        suggestion_content_text_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        suggestion_content_text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        content_layout.addWidget(suggestion_content_text_label)
 
         scroll_area.setWidget(content_widget)
 
@@ -277,7 +297,7 @@ class FileExplorer(QWidget):
         ok_button = QPushButton("Ok")
         cancel_button = QPushButton("Cancel")
 
-        ok_button.clicked.connect(self.on_yes_to_all_clicked)
+        ok_button.clicked.connect(self.ok_button_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         button_layout.addWidget(ok_button)
@@ -293,8 +313,10 @@ class FileExplorer(QWidget):
     def reset_confirmation_window(self):
         self.confirmation_window = None
 
-    def on_yes_to_all_clicked(self):
-        print("Ok button clicked")
+    def ok_button_clicked(self):
+        print("Ok button clicked, trying to move files")
+        print(f"Files to move: {self.source_tree.get_checked_files()}")
+        move_files(self.source_tree.get_checked_files(), self.dest_view.chosen_dest_path)
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
@@ -303,7 +325,7 @@ class FileExplorer(QWidget):
         self.show_confirmation_window()
 
     def on_source_filt_changed(self):
-        target = self.source_filter_edit.text()
+        target = self.source_filter_textbox.text()
         self.source_list = getMatches(target, self.source_list)
         self.source_tree.rerender_tree_layout(self.source_list)
 
