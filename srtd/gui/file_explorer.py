@@ -391,13 +391,13 @@ def combine_lists(priority_list, secondary_list):
     combined_list = []
 
     # Add items from the priority list first
-    for item in priority_list:
+    for item in reversed(priority_list):
         if item.name not in seen:
             combined_list.append(item)
             seen.add(item.name)
 
     # Add items from the secondary list
-    for item in secondary_list:
+    for item in reversed(secondary_list):
         if item.name not in seen:
             combined_list.append(item)
             seen.add(item.name)
