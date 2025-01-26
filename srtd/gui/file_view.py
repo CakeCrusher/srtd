@@ -16,48 +16,41 @@ from ..schema import FileObject
 
 
 class FileTreeScrollView(QScrollArea):
-    # Define the `file_clicked` signal at the class level
     file_clicked = Signal(str)
 
-    def __init__(self, file_list=[], bg_color_stylesheet=None, show_path=False, parent=None, has_checkboxes: bool = True):
+    def __init__(self, file_list=None, bg_color_stylesheet=None, show_path=False, parent=None, has_checkboxes: bool = True):
         super().__init__(parent)
 
-        # Set background color if provided
+        self.file_list = file_list if file_list else []
         self.bg_color_stylesheet = bg_color_stylesheet if bg_color_stylesheet else PastelGreen().get_style_sheet()
-
-        self.file_list = file_list
         self.show_path = show_path
         self.has_checkboxes = has_checkboxes
 
-        # Connect the signal to a slot that prints to the console
-        self.file_clicked.connect(self.on_file_clicked)
+        self.checkboxes = []  # Store checkboxes and their associated file objects
 
+        self.file_clicked.connect(self.on_file_clicked)
         self.setup_ui()
 
     def setup_ui(self):
-        # Create the tree widget and layout
         tree_widget = QWidget()
         tree_layout = QVBoxLayout(tree_widget)
 
         tree_widget.setStyleSheet(self.bg_color_stylesheet)
         tree_widget.setContentsMargins(0, 0, 0, 0)
 
-        # Add file structure lines
         for file in self.file_list:
             file_entry = QHBoxLayout()
             if self.has_checkboxes:
                 check_box = QCheckBox()
                 check_box.setStyleSheet(checkbox_styling)
+                self.checkboxes.append((check_box, file))  # Store the checkbox with its file object
                 file_entry.addWidget(check_box, 1)
 
             icon = "📁" if file.is_directory else "📄"
             text = file.path if self.show_path else file.name
 
-            # Use QPushButton for clickable behavior
             file_button = QPushButton(f"{icon} {text}")
             file_button.setStyleSheet("border: none; text-align: left;")
-
-            # Pass the current file path explicitly using a default argument
             file_button.clicked.connect(
                 lambda checked, path=file.path: self.file_clicked.emit(path)
             )
@@ -68,35 +61,52 @@ class FileTreeScrollView(QScrollArea):
         if not self.file_list:
             print("no files")
 
-        self.setWidgetResizable(True)  # Allow the widget inside to resize
-        self.setWidget(tree_widget)  # Set the tree widget as the content of the scroll area
+        self.setWidgetResizable(True)
+        self.setWidget(tree_widget)
 
-        # Simulate loading delay (if needed)
         QTimer.singleShot(100, self.adjust_scroll_bar)
 
     def adjust_scroll_bar(self):
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def rerender_tree_layout(self, file_list=[]):
-        # replace file list
         self.file_list = file_list
 
-        tree_widget = self.widget()  # Get the current widget in the scroll area
+        tree_widget = self.widget()
         if tree_widget is not None:
             tree_layout = tree_widget.layout()
             if tree_layout is not None:
                 while tree_layout.count():
-                    item = tree_layout.takeAt(0)  # Take the first item from the layout
+                    item = tree_layout.takeAt(0)
                     if item.widget():
-                        item.widget().deleteLater()  # If the item is a widget, delete it
-            tree_widget.deleteLater()  # Finally, delete the tree widget itself
+                        item.widget().deleteLater()
+            tree_widget.deleteLater()
 
-        self.setup_ui()  # Optionally re-setup the UI if needed
+        self.checkboxes.clear()  # Clear the old checkboxes
+        self.setup_ui()
 
     def on_file_clicked(self, file_path):
-        # Print the clicked file path to the console
         print(f"File clicked: {file_path}")
+        self.chosen_dest_path = file_path
 
+    def get_checked_files(self) -> List[FileObject]:
+        """Returns a list of files that are checked."""
+        return [file for checkbox, file in self.checkboxes if checkbox.isChecked()]
+
+    def get_checked_items(self) -> List[str]:
+        """Retrieve a list of checked file paths."""
+        checked_items = []
+        tree_widget = self.widget()
+        if tree_widget:
+            for i in range(tree_widget.layout().count()):
+                item_layout = tree_widget.layout().itemAt(i)
+                if item_layout and item_layout.layout():
+                    checkbox = item_layout.layout().itemAt(0).widget()
+                    if isinstance(checkbox, QCheckBox) and checkbox.isChecked():
+                        file_button = item_layout.layout().itemAt(1).widget()
+                        if isinstance(file_button, QPushButton):
+                            checked_items.append(file_button.text().split(" ", 1)[-1])  # Extract file path or name
+        return checked_items
 checkbox_styling = """
             QCheckBox {
                 background-color: #f0f0f0;

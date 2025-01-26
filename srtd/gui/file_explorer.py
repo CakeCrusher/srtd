@@ -66,6 +66,7 @@ class FileExplorer(QWidget):
                         PastelYellow().get_style_sheet())
         file_layout.addWidget(self.source_tree)
 
+
         # todo implement filter below the file view
         source_filter_layout = QHBoxLayout()
         source_selection_label = QLabel("Filter Source Files:")
@@ -174,7 +175,7 @@ class FileExplorer(QWidget):
         dest_filter_layout = QHBoxLayout()
         dest_filter_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
-
+        
         semantic_search_button = QPushButton("Semantic Search")
         dest_filter_layout.addWidget(dest_filter_label)
 
@@ -339,6 +340,7 @@ class FileExplorer(QWidget):
         if not selected_dir:
             print("Please enter a source directory path")
             return
+
         res = buildFileList(selected_dir)        
         semantic_upload = SemanticFileUploading()
         semantic_upload.upload_files(res)
