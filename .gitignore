@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+/.venv/
 *.log
 tmp/
 
@@ -7,7 +8,4 @@ tmp/
 *.egg
 build
 htmlcov
-
 .env
-
-*venv

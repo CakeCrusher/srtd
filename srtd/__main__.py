@@ -19,7 +19,10 @@ def main(args=None):
     client = WeaviateClient()
     client.ensure_collection(os.getenv("COLLECTION_NAME"))
 
-    core.buildFileTree(source_dir)
+    file_list = core.buildFileList(source_dir)
+
+    if len(args) > 1 and args[1] == "print":
+        print(file_list)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
