@@ -108,6 +108,7 @@
           packages = [
             python
             pkgs.uv
+            pkgs.zstd
           ];
           env =
             {
@@ -171,7 +172,8 @@
                       old.nativeBuildInputs
                       ++ final.resolveBuildSystem {
                         editables = [ ];
-                      };
+                      }
+                      ++ [ pkgs.python312Packages.pyside6 ];
                   });
 
                 })
@@ -210,5 +212,11 @@
             '';
           };
       };
+
+      # relevant fix
+      extraPackages = with pkgs; [
+        zstd
+        python312Packages.pyside6
+      ];
     };
 }
