@@ -65,6 +65,7 @@ class WeaviateClient:
         
     def upload_file(self, file: FileObject) -> bool:
         try:
+            print(file.model_dump())
             self.collection.data.insert(file.model_dump())
             return True
         except Exception as e:
@@ -73,13 +74,18 @@ class WeaviateClient:
         
     def upsert_file(self, file: FileObject) -> FileObject:
         # check if file exists if it does do nothing otherwise upload it
-        response = self.collection.query.fetch_objects(
-            limit=1,
-            filters=Filter.by_property("path").equal(file.path)
-        )
-        if len(response.objects) > 0:
+        try:
+            response = self.collection.query.fetch_objects(
+                limit=1,
+                filters=Filter.by_property("path").equal(file.path)
+            )
+            objects = response.objects
+        except Exception as e:
+            objects = []
+        
+        if len(objects) > 0:
             print(f"{file.path}\t did not re-upload, it already exists")
-            return FileObject(**response.objects[0].properties)
+            return FileObject(**objects[0].properties)
         else:
             print(f"{file.path}\t uploading...")
             openai_client = OpenAIClient()
@@ -87,6 +93,7 @@ class WeaviateClient:
             file.ai_summary = openai_client.file_summary(file)
             print(f"File summary: {file.ai_summary}")
             return self.upload_file(file)
+                
 
     def semantic_search(self, query: str, limit: int = 10) -> List[tuple[FileObject, float]]:
         response = self.collection.query.hybrid(
