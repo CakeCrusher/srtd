@@ -89,14 +89,17 @@ class FileExplorer(QWidget):
         # Create search bar
         search_layout = QHBoxLayout()
         search_label = QLabel("Search:")
-        search_bar = QLineEdit()
+        self.search_bar = QLineEdit()
         search_button = QPushButton("Search")
         search_layout.addWidget(search_label)
-        search_layout.addWidget(search_bar)
+        search_layout.addWidget(self.search_bar)
         search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
+
+        # handle search bar changes
+        self.search_bar.textChanged.connect(self.on_text_changed)
 
         # Create checkbox
         self.checkbox = QCheckBox("Track State")
@@ -237,3 +240,6 @@ class FileExplorer(QWidget):
 
     def on_message_box_result(self):
         self.show_custom_window()
+
+    def on_text_changed(self):
+        print("Text changed: ", self.search_bar.text())
