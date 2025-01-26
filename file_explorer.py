@@ -1,4 +1,4 @@
-from PySide6 import QtCore
+from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget,
@@ -11,8 +11,9 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QCheckBox,
-    QMessageBox, QDialogButtonBox
+    QMessageBox
 )
+
 class FileExplorer(QWidget):
     def __init__(self, theme):
         super().__init__()
@@ -64,7 +65,7 @@ class FileExplorer(QWidget):
         self.checkbox.stateChanged.connect(self.on_checkbox_changed)
 
         # Connect search button click to show message box
-        search_button.clicked.connect(self.show_message_box)
+        search_button.clicked.connect(self.show_custom_window)
 
         # Create splitter to resize the file tree and preview area
         splitter = QSplitter(Qt.Horizontal)
@@ -97,39 +98,81 @@ class FileExplorer(QWidget):
         else:
             print("Checkbox is checked")
 
-    def show_message_box(self) -> QMessageBox.ButtonRole:
-        # Create and show a message box with three buttons in the desired order
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setWindowTitle("Search")
-        msg_box.setText("Choose an action:")
+    def show_custom_window(self):
+        # Create a custom window
+        window = QtWidgets.QDialog()
+        window.setWindowTitle("Search Options")
 
-        # Define the buttons
+        # Create a vertical layout for the window
+        window_layout = QtWidgets.QVBoxLayout(window)
+
+        # Create a QLabel with long text
+        text_label = QtWidgets.QLabel(
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+            "This is a long text that will be displayed in the popup box.\n"
+            "It will automatically scroll if it exceeds the available space.\n"
+            "You can add more lines of text here as needed."
+
+        )
+
+        # Create a scroll area
+        scroll_area = QtWidgets.QScrollArea()
+        scroll_area.setWidget(text_label)
+        scroll_area.setWidgetResizable(True)  # Allow the widget to resize within the scroll area
+
+        # Add the scroll area to the window layout
+        window_layout.addWidget(scroll_area)
+
+        # Create individual buttons
         ok_button = QPushButton("Ok")
         yes_to_all_button = QPushButton("Yes to All")
         cancel_button = QPushButton("Cancel")
 
-        # Add buttons in the desired order
-        msg_box.addButton(ok_button, QMessageBox.ButtonRole.AcceptRole)
-        msg_box.addButton(yes_to_all_button, QMessageBox.ButtonRole.ActionRole)
-        msg_box.addButton(cancel_button, QMessageBox.ButtonRole.RejectRole)
+        # Connect button signals to slots
+        ok_button.clicked.connect(window.close)
+        yes_to_all_button.clicked.connect(window.close)
+        cancel_button.clicked.connect(window.close)
 
-        # Show the message box and get the result
-        result = msg_box.exec()
+        # Add buttons to the window layout
+        window_layout.addWidget(ok_button)
+        window_layout.addWidget(yes_to_all_button)
+        window_layout.addWidget(cancel_button)
 
-        # Return the result
-        return result
+        # Show the window and start its event loop
+        window.show()
+        window.exec_()
 
     def on_message_box_result(self):
-        # Call show_message_box and get the result
-        result = self.show_message_box()
-
-        # Handle the result
-        if result == QMessageBox.ButtonRole.RejectRole:
-            print("Cancel button clicked")
-        elif result == QMessageBox.ButtonRole.ActionRole:
-            print("Yes to All button clicked")
-        elif result == QMessageBox.ButtonRole.AcceptRole:
-            print("Ok button clicked")
-        else:
-            print(f"Unexpected result: {result}")
+        self.show_custom_window()
