@@ -105,13 +105,10 @@ class FileExplorer(QWidget):
         preview_icon.setStyleSheet("font-size: 48px;")
         preview_icon.setStyleSheet("background-color: #B0E0E0;")
 
-        # Create summary text
-        summary_text = QLabel("Summary:\nLorem ipsum dolor sit amet, consectetur "
-                              "adipiscing elit. Sed do eiusmod tempor incididunt ut "
-                              "labore et dolore magna aliqua. Ut enim ad minim veniam, "
-                              "quis nostrud exercitation ullamco laboris nisi ut aliquip "
-                              "ex ea commodo consequat.")
-        summary_text.setWordWrap(True)
+        # Create summary text as instance variable
+        self.summary_text = QLabel("Select a file to view details")
+        self.summary_text.setWordWrap(True)
+        self.summary_text.setStyleSheet(PastelGreen().get_style_sheet())
 
         # Stack icon and preview
         icon_layout = QVBoxLayout()
@@ -119,7 +116,11 @@ class FileExplorer(QWidget):
 
         # Add widgets to preview content layout
         preview_content_layout.addLayout(icon_layout)
-        preview_content_layout.addWidget(summary_text)
+        preview_content_layout.addWidget(self.summary_text)
+
+        # Connect file click signals to update summary
+        self.source_tree.file_clicked.connect(self.update_summary)
+        # self.dest_view.file_clicked.connect(self.update_summary)
 
         # Add everything to main preview layout
         preview_layout.addWidget(preview_title)
@@ -370,6 +371,37 @@ class FileExplorer(QWidget):
         self.source_list = res
         self.source_tree.rerender_tree_layout(self.source_list)
         print(f"Source directory updated to: {selected_dir}")
+
+    def update_summary(self, file_path: str):
+        """Update the summary text when a file is clicked"""
+        # Find the file object that matches this path
+        file_obj = None
+        for file in self.source_list + self.dest_list:
+            if file.path == file_path:
+                file_obj = file
+                break
+
+        if file_obj:
+            summary = f"File Details:\n\n"
+            summary += f"📄 Name: {file_obj.name}\n"
+            summary += f"📁 Path: {file_obj.path}\n"
+            summary += f"📅 Created: {self.format_timestamp(file_obj.created_at)}\n"
+            summary += f"📂 Type: {'Directory' if file_obj.is_directory else 'File'}\n"
+
+            if file_obj.ai_summary:
+                summary += f"\n🤖 AI Summary:\n{file_obj.ai_summary}\n"
+
+            if file_obj.string_content_truncated and not file_obj.is_directory:
+                summary += f"\n📝 Preview:\n{file_obj.string_content_truncated[:200]}..."
+
+            self.summary_text.setText(summary)
+        else:
+            self.summary_text.setText("Select a file to view details")
+
+    def format_timestamp(self, timestamp: int) -> str:
+        """Convert Unix timestamp to readable date"""
+        from datetime import datetime
+        return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 
 def cls():
