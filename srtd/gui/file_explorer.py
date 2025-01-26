@@ -311,7 +311,7 @@ class FileExplorer(QWidget):
     def ok_button_clicked(self):
         print("Ok button clicked, trying to move files")
         print(f"Files to move: {self.source_tree.get_checked_files()}")
-        move_files(self.source_tree.get_checked_files(), self.dest_directory_text.text())
+        move_files(self.source_tree.get_checked_files(), self.dest_view.chosen_dest_path)
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")

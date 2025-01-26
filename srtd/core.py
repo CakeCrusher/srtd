@@ -78,11 +78,11 @@ def buildDestinationList(allowed_dests: list[str]) -> list[FileObject]:
     return destination_list
 
 # take a collection of file objects and move them to a destination
-def move_files(selected_files: list[FileObject], destination: FileObject) -> int:
+def move_files(selected_files: list[FileObject], destination: str) -> int:
     # Loop through the list of files and move each one
     for file in selected_files:
         # Construct the destination file path
-        destination_path = os.path.normpath(os.path.join(destination.path, file.name))
+        destination_path = os.path.normpath(os.path.join(destination, file.name))
 
         print(f"Trying to move {os.path.normpath(file.path)} to {destination_path}")
         try:

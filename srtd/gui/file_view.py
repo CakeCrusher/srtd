@@ -87,6 +87,7 @@ class FileTreeScrollView(QScrollArea):
 
     def on_file_clicked(self, file_path):
         print(f"File clicked: {file_path}")
+        self.chosen_dest_path = file_path
 
     def get_checked_files(self) -> List[FileObject]:
         """Returns a list of files that are checked."""
