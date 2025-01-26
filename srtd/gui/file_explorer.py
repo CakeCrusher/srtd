@@ -147,7 +147,9 @@ class FileExplorer(QWidget):
         # get list of destinations for use
         destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
 
-        lex_layout.addWidget(FileTreeScrollView(destination_list, show_path=True, has_checkboxes=False))
+        file_tree_scroll_view = FileTreeScrollView(destination_list, show_path=True, has_checkboxes=False)
+        file_tree_scroll_view.file_clicked.connect(self.show_confirmation_window)
+        lex_layout.addWidget(file_tree_scroll_view)
         # context_layout.addWidget(create_file_tree_scroll_view())
 
         suggestions_content_layout.addWidget(lex_box)
@@ -172,10 +174,6 @@ class FileExplorer(QWidget):
 
         # Connect search bar changes
         self.search_bar.textChanged.connect(self.on_text_changed)
-
-        # Connect search button to show confirmation window
-        # TODO make each of the files a button to connect
-        # search_button.clicked.connect(self.show_confirmation_window)
 
         # Add layouts to the main layout
         self.main_layout.addLayout(file_layout, 4)
