@@ -1,3 +1,5 @@
+import os
+
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
@@ -107,6 +109,20 @@ class FileTreeScrollView(QScrollArea):
                         if isinstance(file_button, QPushButton):
                             checked_items.append(file_button.text().split(" ", 1)[-1])  # Extract file path or name
         return checked_items
+
+    # New method to get the source directory
+    def get_source_dir(self) -> str:
+        if self.file_list:
+            # Return the directory of the first file in the list
+            return os.path.dirname(self.file_list[0].path)
+        return ""
+
+    # New method to update the file list
+    def update_file_list(self, new_file_list):
+        self.file_list = new_file_list
+        self.rerender_tree_layout(new_file_list)
+
+
 checkbox_styling = """
             QCheckBox {
                 background-color: #f0f0f0;
@@ -129,3 +145,6 @@ checkbox_styling = """
                 border-color: #888;
             }
         """
+
+
+

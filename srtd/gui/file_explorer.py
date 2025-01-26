@@ -312,10 +312,29 @@ class FileExplorer(QWidget):
     def ok_button_clicked(self):
         print("Ok button clicked, trying to move files")
         print(f"Files to move: {self.source_tree.get_checked_files()}")
+
+        # Move the files
         move_files(self.source_tree.get_checked_files(), self.dest_view.chosen_dest_path)
+
+        # Close the confirmation window
+        self.confirmation_window.close()
+
+        # Update the source directory file list
+        source_dir = self.source_tree.get_source_dir()
+        file_list = buildFileList(source_dir)
+        self.source_tree.update_file_list(file_list)
+
+        # Refresh the tree view layout to reflect the changes
+        self.source_tree.rerender_tree_layout(file_list)
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
+        self.confirmation_window.close()
+        self.reset_confirmation_window()
+        self.dest_bar.setText("")
+        self.source_filter_edit.setText("")
+        self.dest_bar.setFocus()
+        self.source_filter_edit.setFocus()
 
     def on_message_box_result(self):
         self.show_confirmation_window()
