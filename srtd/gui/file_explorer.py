@@ -28,6 +28,7 @@ from .themes import *
 class FileExplorer(QWidget):
     def __init__(self, app, theme=Sand()):
         super().__init__()
+        self.dest_directory_text = None
         self.app = app
         self.theme = theme
 
@@ -188,6 +189,10 @@ class FileExplorer(QWidget):
 
         search_button.clicked.connect(self.show_confirmation_window)
 
+        # Connect search button to show confirmation window
+        # TODO make each of the files a button to connect
+        # search_button.clicked.connect(self.show_confirmation_window)
+
         # Add layouts to the main layout
         self.main_layout.addLayout(file_layout, 4)
         self.main_layout.addLayout(right_column_layout, 6)
@@ -211,7 +216,7 @@ class FileExplorer(QWidget):
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
-    def show_confirmation_window(self):
+    def show_confirmation_window(self, file_name):
         if self.confirmation_window and self.confirmation_window.isVisible():
             self.confirmation_window.raise_()
             self.confirmation_window.activateWindow()
@@ -227,7 +232,8 @@ class FileExplorer(QWidget):
         lex_suggestion_label.setFixedHeight(25)
         lex_suggestion_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         lex_suggestion_label.setStyleSheet(
-            ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;")
+            ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;"
+        )
 
         window_layout.addLayout(lex_suggestion_layout)
         suggestion_content_layout = QHBoxLayout()
@@ -238,7 +244,8 @@ class FileExplorer(QWidget):
         content_widget = QtWidgets.QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        suggestion_content_text = QtWidgets.QLabel("File one\nFile two\nFile three\nFile four\n")
+        suggestion_content_text = QtWidgets.QLabel(
+            "Files to move will appear here (future enhancement).")
         suggestion_content_text.setWordWrap(True)
         suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
         suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -260,10 +267,11 @@ class FileExplorer(QWidget):
         dest_directory_image.setStyleSheet("font-size: 48px;")
         dest_directory_layout.addWidget(dest_directory_image)
 
-        dest_directory_text = QtWidgets.QLabel("Destination Directory TODO:")
-        dest_directory_text.setWordWrap(True)
-        dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
-        dest_directory_layout.addWidget(dest_directory_text)
+        # Update the destination directory text with the clicked file name
+        self.dest_directory_text = QtWidgets.QLabel(f"Destination Directory: {file_name}")
+        self.dest_directory_text.setWordWrap(True)
+        self.dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
+        dest_directory_layout.addWidget(self.dest_directory_text)
 
         suggestion_content_layout.addLayout(dest_directory_layout, 2)
 
@@ -271,15 +279,12 @@ class FileExplorer(QWidget):
 
         button_layout = QHBoxLayout()
         ok_button = QPushButton("Ok")
-        yes_to_all_button = QPushButton("Yes to All")
         cancel_button = QPushButton("Cancel")
 
-        ok_button.clicked.connect(self.on_ok_clicked)
-        yes_to_all_button.clicked.connect(self.on_yes_to_all_clicked)
+        ok_button.clicked.connect(self.on_yes_to_all_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         button_layout.addWidget(ok_button)
-        button_layout.addWidget(yes_to_all_button)
         button_layout.addWidget(cancel_button)
 
         window_layout.addLayout(button_layout)
@@ -292,11 +297,8 @@ class FileExplorer(QWidget):
     def reset_confirmation_window(self):
         self.confirmation_window = None
 
-    def on_ok_clicked(self):
-        print("Ok button clicked")
-
     def on_yes_to_all_clicked(self):
-        print("Yes to All button clicked")
+        print("Ok button clicked")
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
