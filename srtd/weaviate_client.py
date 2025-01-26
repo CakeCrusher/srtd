@@ -11,6 +11,9 @@ from .schema import FileObject
 from .openai_client import OpenAIClient
 from dotenv import load_dotenv
 
+from schema import FileObject
+from openai_client import OpenAIClient
+from core import create_truncated_content
 load_dotenv()
 
 class WeaviateClient:
@@ -80,6 +83,7 @@ class WeaviateClient:
         else:
             print(f"{file.path}\t uploading...")
             openai_client = OpenAIClient()
+            file.string_content_truncated = create_truncated_content(file.path)
             file.ai_summary = openai_client.file_summary(file)
             return self.upload_file(file)
 
