@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 import os
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches
+from .file_view import create_file_tree_scroll_view
 
 from .themes import *
 
@@ -52,6 +53,7 @@ class FileExplorer(QWidget):
         file_tree.setStyleSheet(PastelYellow().get_style_sheet())
 
         file_layout.addWidget(file_tree)
+        file_layout.addWidget(create_file_tree_scroll_view())
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -128,34 +130,6 @@ class FileExplorer(QWidget):
 
         lex_layout.addWidget(lex_title)
         context_layout.addWidget(context_title)
-
-        def create_file_tree_scroll_view():
-            tree_widget = QWidget()
-            tree_layout = QVBoxLayout(tree_widget)
-
-            tree_widget.setStyleSheet(PastelGreen().get_style_sheet())
-            tree_widget.setContentsMargins(0, 0, 0, 0)
-
-            # Add file structure lines
-            for i in range(21):
-                file_line = QLabel("📁   directory_name")
-                file_line.setStyleSheet("text-align: center")
-                file_line.setAlignment(
-                    Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-                tree_layout.addWidget(file_line)
-
-            scroll_area = QtWidgets.QScrollArea()
-            scroll_area.setStyleSheet(PastelGreen().get_style_sheet())
-            scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize
-
-            # Set the tree widget as the content of the scroll area
-            scroll_area.setWidget(tree_widget)
-
-            # Wait a little to allow for stuff to finish loading in
-            QtCore.QTimer.singleShot(100, lambda: scroll_area.verticalScrollBar().setValue(
-                scroll_area.verticalScrollBar().maximum()))
-
-            return scroll_area
 
         lex_layout.addWidget(create_file_tree_scroll_view())
         context_layout.addWidget(create_file_tree_scroll_view())
