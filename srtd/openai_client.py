@@ -34,7 +34,6 @@ class OpenAIClient:
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY environment variable is not set")
-        print("API KEY", api_key)
         self.client = OpenAI(api_key=api_key)
 
 

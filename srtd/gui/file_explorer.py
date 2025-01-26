@@ -1,3 +1,4 @@
+from typing import List
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -15,6 +16,8 @@ from PySide6.QtWidgets import (
 )
 
 import os
+
+from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches
 from .file_view import create_file_tree_scroll_view
@@ -316,6 +319,7 @@ def cls():
     os.system('cls' if os.name=='nt' else 'clear')
 
 
-def stringify_file_list(file_list: str):
+def stringify_file_list(file_list: List[FileObject]):
     # turn file list into list of strings of names
-    return [file['name'] for file in file_list if 'name' in file]
+    return [file.name for file in file_list]
+

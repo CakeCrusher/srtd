@@ -2,9 +2,11 @@
 
 import os
 from pathlib import Path
+from typing import List
+from .schema import FileObject
 
 # collect top-level files in provided source_dir
-def buildFileList(source_dir):
+def buildFileList(source_dir) -> List[FileObject]:
     print(f"Source dir is {source_dir}")
 
     # verify path passed in
@@ -27,9 +29,12 @@ def buildFileList(source_dir):
             file_info = {
                 'path': entry.path,
                 'name': entry.name,
-                'is_dir': entry.is_dir(),
-                'created_at': entry.stat().st_ctime
+                'is_directory': entry.is_dir(),
+                'created_at': int(entry.stat().st_ctime),
+                'ai_summary': "",
+                'string_content_truncated': ""
             }
+            file_info = FileObject(**file_info)
 
             file_list.append(file_info)
 
