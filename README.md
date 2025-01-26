@@ -3,6 +3,7 @@ Here’s an updated version of the README that includes insights about key depen
 ---
 
 # Srtd: AI-Powered File Organization
+![Audience _ Untitled - Figma Slides · 9 16am · 01-26](https://github.com/user-attachments/assets/e01221cb-aded-451c-b889-13735fa53fff)
 
 ## Inspiration
 
@@ -30,8 +31,9 @@ Srtd automates tedious organizational tasks, empowering students and educators t
 
 ## How We Built It
 
-![image](https://github.com/user-attachments/assets/56ea36e6-f30b-4163-bb17-fee410a63b40)
+![Audience _ Untitled - Figma Slides](https://github.com/user-attachments/assets/314f98bf-b822-4780-96d3-2be74b24816c)
 _UI design process_
+![Audience _ Untitled - Figma Slides · 9 16am · 01-26](https://github.com/user-attachments/assets/d8efea61-eb6b-4ceb-96f1-20c239410803)
 
 ### Tech Stack
 - **PySide6:** Provides a cross-platform graphical user interface for seamless user interaction.
