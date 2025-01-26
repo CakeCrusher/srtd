@@ -63,20 +63,26 @@ class FileExplorer(QWidget):
 
         # Create file tree view using the source list
         self.source_tree = FileTreeScrollView(self.source_list,
-                                              PastelYellow().get_style_sheet())
+                        PastelYellow().get_style_sheet())
         file_layout.addWidget(self.source_tree)
+
 
         # todo implement filter below the file view
         source_filter_layout = QHBoxLayout()
         source_selection_label = QLabel("Filter Source Files:")
-        self.source_filter_edit = QLineEdit()
+        self.source_filter_textbox = QLineEdit()
 
         ## Todo as we type, sort matching files to the bottom of the list
         # todo is this function the correct choice here?
-        self.source_filter_edit.textChanged.connect(self.on_source_filt_changed)
+        self.source_filter_textbox.textChanged.connect(self.on_source_filt_changed)
+
+        semantic_search_button = QPushButton("Semantic Search")
+        # handle semantic search button changes
+        semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
 
         source_filter_layout.addWidget(source_selection_label)
-        source_filter_layout.addWidget(self.source_filter_edit)
+        source_filter_layout.addWidget(self.source_filter_textbox)
+        source_filter_layout.addWidget(semantic_search_button)
 
         file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
@@ -166,18 +172,17 @@ class FileExplorer(QWidget):
         right_column_layout.addLayout(suggestions_layout)
 
         # Search bar layout
-        search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Dest Files:")
+        dest_filter_layout = QHBoxLayout()
+        dest_filter_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
-
+        
         semantic_search_button = QPushButton("Semantic Search")
-        search_layout.addWidget(search_label)
+        dest_filter_layout.addWidget(dest_filter_label)
 
-        search_layout.addWidget(self.dest_bar)
-        search_layout.addWidget(semantic_search_button)
+        dest_filter_layout.addWidget(self.dest_bar)
 
         # Add search bar layout
-        right_column_layout.addLayout(search_layout)
+        right_column_layout.addLayout(dest_filter_layout)
 
         # Connect search bar changes
         self.dest_bar.textChanged.connect(self.on_dest_text_changed)
@@ -208,7 +213,7 @@ class FileExplorer(QWidget):
             print("Checkbox is checked")
 
     def on_semantic_search_clicked(self):
-        target = self.dest_bar.text()
+        target = self.source_filter_textbox.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
@@ -340,7 +345,7 @@ class FileExplorer(QWidget):
         self.show_confirmation_window()
 
     def on_source_filt_changed(self):
-        target = self.source_filter_edit.text()
+        target = self.source_filter_textbox.text()
         self.source_list = getMatches(target, self.source_list)
         self.source_tree.rerender_tree_layout(self.source_list)
 
