@@ -3,6 +3,10 @@ Here’s an updated version of the README that includes insights about key depen
 ---
 
 # Srtd: AI-Powered File Organization
+![Capture-2025-01-26-092931](https://github.com/user-attachments/assets/d88dc431-03a0-4a1f-b10e-7b7953f7e08f)
+
+
+
 
 ## Inspiration
 
@@ -11,6 +15,11 @@ In today's digital age, students face the challenge of managing vast amounts of 
 ---
 
 ## What It Does
+![image](https://github.com/user-attachments/assets/08c86c60-8b7e-405b-8aba-7fee6e1f2665)
+_Selecting files from home screen_
+
+![image](https://github.com/user-attachments/assets/4ce981a9-c70b-44f9-96a1-e7d38515ecce)
+_Transferring files_
 
 Srtd is an intelligent file management solution that simplifies and optimizes file organization:
 
@@ -24,6 +33,12 @@ Srtd automates tedious organizational tasks, empowering students and educators t
 ---
 
 ## How We Built It
+
+![Audience _ Untitled - Figma Slides](https://github.com/user-attachments/assets/74792827-e9ce-454d-b933-dcb51db4924d)
+
+_UI design process_
+![Audience _ Untitled - Figma Slides · 9 16am · 01-26](https://github.com/user-attachments/assets/60a1acb3-1cec-4158-a05c-cbcb417cd42b)
+
 
 ### Tech Stack
 - **PySide6:** Provides a cross-platform graphical user interface for seamless user interaction.
@@ -47,6 +62,10 @@ Srtd automates tedious organizational tasks, empowering students and educators t
 ---
 
 ## Insights into Key Dependencies
+
+![image](https://github.com/user-attachments/assets/c038cadf-81a1-4ecf-b45b-7ad69fe4eff4)
+_UML diagram of the business logic_
+
 
 ### 1. **Weaviate**
    - **Purpose:** A vector database designed for semantic search and similarity-based queries.
