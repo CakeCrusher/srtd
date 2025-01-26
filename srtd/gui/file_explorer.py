@@ -41,9 +41,10 @@ class FileExplorer(QWidget):
         self.main_layout = QHBoxLayout()
 
         self.source_dir = "~/Downloads"
+        self.expanded_source = os.path.expanduser(self.source_dir)
 
         # get file_list to work with
-        self.source_list = buildFileList(os.path.expanduser(self.source_dir))
+        self.source_list = buildFileList(self.expanded_source)
         self.semantic_source_list = []
 
         # Create file tree view
@@ -225,6 +226,7 @@ class FileExplorer(QWidget):
     def on_semantic_search_clicked(self):
         target = self.source_filter_textbox.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
+        self.semantic_source_list = [file for file in self.semantic_source_list if file.path.startswith(self.expanded_source)]
         print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
         combined = combine_lists(self.semantic_source_list, self.source_list)
         self.source_tree.rerender_tree_layout(combined)
@@ -371,6 +373,9 @@ class FileExplorer(QWidget):
         if not selected_dir:
             print("Please enter a source directory path")
             return
+
+        self.expanded_source = os.path.expanduser(selected_dir)
+        self.source_dir = selected_dir
 
         res = buildFileList(selected_dir)        
         semantic_upload = SemanticFileUploading()
