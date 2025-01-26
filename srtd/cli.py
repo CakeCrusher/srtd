@@ -23,3 +23,7 @@ def main():
 
     for file in sorted:
         print(file['name'])
+
+
+if __name__ == '__main__':
+    main()
