@@ -147,7 +147,6 @@ class FileExplorer(QWidget):
 
         )
 
-        # Create a scroll area
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(text_label)
         scroll_area.setWidgetResizable(True)  # Allow the widget to resize within the scroll area
@@ -161,9 +160,9 @@ class FileExplorer(QWidget):
         cancel_button = QPushButton("Cancel")
 
         # Connect button signals to slots
-        ok_button.clicked.connect(window.close)
-        yes_to_all_button.clicked.connect(window.close)
-        cancel_button.clicked.connect(window.close)
+        ok_button.clicked.connect(self.on_ok_clicked)
+        yes_to_all_button.clicked.connect(self.on_yes_to_all_clicked)
+        cancel_button.clicked.connect(self.on_cancel_clicked)
 
         # Add buttons to the window layout
         window_layout.addWidget(ok_button)
@@ -173,6 +172,19 @@ class FileExplorer(QWidget):
         # Show the window and start its event loop
         window.show()
         window.exec_()
+
+
+    def on_ok_clicked(self):
+        print("Ok button clicked")
+
+
+    def on_yes_to_all_clicked(self):
+        print("Yes to All button clicked")
+
+
+    def on_cancel_clicked(self):
+        print("Cancel button clicked")
+
 
     def on_message_box_result(self):
         self.show_custom_window()
