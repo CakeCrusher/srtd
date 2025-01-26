@@ -7,9 +7,11 @@ from weaviate.classes.query import MetadataQuery, Filter
 from weaviate.classes.config import Property, DataType
 import os
 
-from schema import FileObject
-from openai_client import OpenAIClient
+from .schema import FileObject
+from .openai_client import OpenAIClient
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class WeaviateClient:
     def __init__(self):

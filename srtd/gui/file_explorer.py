@@ -56,7 +56,7 @@ class FileExplorer(QWidget):
         file_tree.setStyleSheet(PastelYellow().get_style_sheet())
 
         file_layout.addWidget(file_tree)
-        file_layout.addWidget(create_file_tree_scroll_view())
+        file_layout.addWidget(create_file_tree_scroll_view([]))
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -134,8 +134,8 @@ class FileExplorer(QWidget):
         lex_layout.addWidget(lex_title)
         context_layout.addWidget(context_title)
 
-        lex_layout.addWidget(create_file_tree_scroll_view())
-        context_layout.addWidget(create_file_tree_scroll_view())
+        lex_layout.addWidget(create_file_tree_scroll_view([]))
+        context_layout.addWidget(create_file_tree_scroll_view([]))
 
         # Add suggestion boxes to content layout
         suggestions_content_layout.addWidget(lex_box)
@@ -316,7 +316,8 @@ class FileExplorer(QWidget):
 
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+    # os.system('cls' if os.name=='nt' else 'clear')
+    pass
 
 
 def stringify_file_list(file_list: List[FileObject]):

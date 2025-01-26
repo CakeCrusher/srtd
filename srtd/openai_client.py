@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from pydantic import BaseModel, Field
 from openai import OpenAI
 
-from schema import FileObject
+from .schema import FileObject
 import os
 
 class FileSummaryGenerator(BaseModel):

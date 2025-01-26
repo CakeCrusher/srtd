@@ -7,10 +7,12 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QLabel,
 )
+from typing import List
+from ..schema import FileObject
 
 from .themes import *
 
-def create_file_tree_scroll_view(file_list: list[FileObject]):
+def create_file_tree_scroll_view(file_list: List[FileObject]):
     tree_widget = QWidget()
     tree_layout = QVBoxLayout(tree_widget)
 
