@@ -117,23 +117,29 @@ def buildDestinationList(allowed_dests: list[str]) -> list[FileObject]:
     return destination_list
 
 # take a collection of file objects and move them to a destination
-def move_files(selected_files: list[FileObject], destination: FileObject) -> int:
-
+def move_files(selected_files: list[FileObject], destination: str) -> int:
     # Loop through the list of files and move each one
     for file in selected_files:
         # Construct the destination file path
-        destination_path = os.path.join(destination.path, file.name)
-        # Move the file
+        destination_path = os.path.normpath(os.path.join(destination, file.name))
+
+        print(f"Trying to move {os.path.normpath(file.path)} to {destination_path}")
         try:
-            # shutil.move(file.path, destination_path)
-            print(f"Moved {file.path} to {destination_path}")
-            return 0
+            # Attempt to move the file
+            print(f"Success moved {os.path.normpath(file.path)} to {destination_path}")
+            shutil.move(os.path.normpath(file.path), os.path.normpath(destination_path))
+
         except FileNotFoundError:
-            print("The source file does not exist.")
+            print(f"The source file {file.path} does not exist.")
+            return -1  # Return early on failure
+
         except PermissionError:
-            print("Permission denied.")
+            print(f"Permission denied for moving {file.path}.")
+            return -1  # Return early on failure
+
         except Exception as e:
             print(f"Failed to move {file.path}: {str(e)}")
+            return -1  # Return early on failure
 
-        # return -1 if failed
-        return -1
+    # If all files are moved successfully, return 0
+    return 0

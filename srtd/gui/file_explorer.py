@@ -24,6 +24,7 @@ from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
+from ..core import move_files
 
 
 class FileExplorer(QWidget):
@@ -62,9 +63,8 @@ class FileExplorer(QWidget):
 
         # Create file tree view using the source list
         self.source_tree = FileTreeScrollView(self.source_list,
-                        PastelYellow().get_style_sheet())
+                                              PastelYellow().get_style_sheet())
         file_layout.addWidget(self.source_tree)
-
 
         # todo implement filter below the file view
         source_filter_layout = QHBoxLayout()
@@ -169,7 +169,7 @@ class FileExplorer(QWidget):
         search_layout = QHBoxLayout()
         search_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
-        
+
         semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
 
@@ -231,6 +231,8 @@ class FileExplorer(QWidget):
             ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;"
         )
 
+        self.confirmation_window.resize(500, 500)  # Larger size
+
         window_layout.addLayout(lex_suggestion_layout)
         suggestion_content_layout = QHBoxLayout()
 
@@ -240,12 +242,26 @@ class FileExplorer(QWidget):
         content_widget = QtWidgets.QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        suggestion_content_text = QtWidgets.QLabel(
-            "Files to move will appear here (future enhancement).")
-        suggestion_content_text.setWordWrap(True)
-        suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
-        suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        content_layout.addWidget(suggestion_content_text)
+        # Get the list of checked files
+        checked_files = self.source_tree.get_checked_files()
+
+        if not checked_files:
+            QMessageBox.warning(self, "No Files Selected",
+                                "Please select files to move before proceeding.")
+            return
+
+        # Create a formatted string where each file appears on a new line
+        suggestion_content_text = "\n".join([f"📄 {file.name}" for file in checked_files])
+
+        # Create the label with formatted file names
+        suggestion_content_text_label = QtWidgets.QLabel(
+            f"The following files will be moved to the destination directory:\n{suggestion_content_text}"
+        )
+        suggestion_content_text_label.setWordWrap(True)
+        suggestion_content_text_label.setStyleSheet(PastelGreen().get_style_sheet())
+        suggestion_content_text_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        suggestion_content_text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        content_layout.addWidget(suggestion_content_text_label)
 
         scroll_area.setWidget(content_widget)
 
@@ -277,7 +293,7 @@ class FileExplorer(QWidget):
         ok_button = QPushButton("Ok")
         cancel_button = QPushButton("Cancel")
 
-        ok_button.clicked.connect(self.on_yes_to_all_clicked)
+        ok_button.clicked.connect(self.ok_button_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         button_layout.addWidget(ok_button)
@@ -293,8 +309,10 @@ class FileExplorer(QWidget):
     def reset_confirmation_window(self):
         self.confirmation_window = None
 
-    def on_yes_to_all_clicked(self):
-        print("Ok button clicked")
+    def ok_button_clicked(self):
+        print("Ok button clicked, trying to move files")
+        print(f"Files to move: {self.source_tree.get_checked_files()}")
+        move_files(self.source_tree.get_checked_files(), self.dest_view.chosen_dest_path)
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
@@ -317,6 +335,7 @@ class FileExplorer(QWidget):
         if not selected_dir:
             print("Please enter a source directory path")
             return
+
         res = buildFileList(selected_dir)        
         semantic_upload = SemanticFileUploading()
         semantic_upload.upload_files(res)
