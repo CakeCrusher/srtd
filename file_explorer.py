@@ -37,10 +37,48 @@ class FileExplorer(QWidget):
 
         # Create file preview area
         preview_layout = QVBoxLayout()
-        preview_area = QLabel()
-        preview_area.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        preview_area.setText("File Preview")
-        preview_layout.addWidget(preview_area)
+
+        # Add title
+        preview_title = QLabel("Preview & Summary")
+        preview_title.setStyleSheet("background-color: #FFE4C4; padding: 5px;")
+
+        # Create preview content area
+        preview_content = QWidget()
+        preview_content_layout = QHBoxLayout(preview_content)
+
+        # Add preview icon area (light blue square)
+        preview_icon = QLabel("📄")
+        preview_icon.setFixedSize(200, 200)
+        preview_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        preview_icon.setStyleSheet("font-size: 48px;")
+        preview_icon.setStyleSheet("background-color: #B0E0E0;")
+
+   
+
+        # Create summary text
+        summary_text = QLabel("Summary:\nLorem ipsum dolor sit amet, consectetur "
+                            "adipiscing elit. Sed do eiusmod tempor incididunt ut "
+                            "labore et dolore magna aliqua. Ut enim ad minim veniam, "
+                            "quis nostrud exercitation ullamco laboris nisi ut aliquip "
+                            "ex ea commodo consequat. Duis aute irure dolor in "
+                            "reprehenderit in voluptate velit esse cillum dolore eu "
+                            "fugiat nulla pariatur. Excepteur sint occaecat cupidatat "
+                            "non proident, sunt in culpa qui officia deserunt mollit "
+                            "anim id est laborum")
+        summary_text.setWordWrap(True)
+
+        # Stack icon and preview
+        icon_layout = QVBoxLayout()
+        icon_layout.addWidget(preview_icon)
+
+        # Add widgets to preview content layout
+        preview_content_layout.addLayout(icon_layout)
+        preview_content_layout.addWidget(summary_text)
+
+        # Add everything to main preview layout
+        preview_layout.addWidget(preview_title)
+        preview_layout.addWidget(preview_content)
+
 
         # Create search bar
         search_layout = QHBoxLayout()
@@ -76,7 +114,7 @@ class FileExplorer(QWidget):
 
         # Set layout for the widget
         self.setLayout(self.main_layout)
-        self.resize(1080, 768)
+
     def on_checkbox_changed(self, state):
         # Handle checkbox state changes here
         print(f"Checkbox state changed to {state}")
