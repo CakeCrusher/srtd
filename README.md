@@ -3,7 +3,8 @@ Here’s an updated version of the README that includes insights about key depen
 ---
 
 # Srtd: AI-Powered File Organization
-![Title](https://github.com/user-attachments/assets/34c19a7e-e4d8-4be9-9355-6833a9fbaa84)
+![Audience _ Untitled - Figma Slides · 9 16am · 01-26](https://github.com/user-attachments/assets/de400a99-efb2-4180-9231-10467e2c9b20)
+
 
 
 ## Inspiration
