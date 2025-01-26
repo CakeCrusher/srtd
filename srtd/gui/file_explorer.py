@@ -71,7 +71,7 @@ class FileExplorer(QWidget):
 
         ## Todo as we type, sort matching files to the bottom of the list
         # todo is this function the correct choice here?
-        source_filter_edit.textChanged.connect(self.on_text_changed)
+        # source_filter_edit.textChanged.connect(self.on_text_changed)
 
         source_filter_layout.addWidget(source_selection_label)
         source_filter_layout.addWidget(source_filter_edit)
@@ -168,14 +168,11 @@ class FileExplorer(QWidget):
         search_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
         
-        search_button = QPushButton("Select Destination")
         semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
 
         search_layout.addWidget(self.dest_bar)
         search_layout.addWidget(semantic_search_button)
-
-        search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
@@ -185,11 +182,6 @@ class FileExplorer(QWidget):
 
         # handle semantic search button changes
         semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
-
-        # Create checkbox
-        # Connect search button click to show message box
-
-        search_button.clicked.connect(self.show_confirmation_window)
 
         # Connect search button to show confirmation window
         # TODO make each of the files a button to connect
