@@ -8,6 +8,8 @@ from PySide6.QtWidgets import (
     QScrollArea,
     QPushButton,
 )
+from typing import List
+from ..schema import FileObject
 
 from .themes import *
 from ..schema import FileObject

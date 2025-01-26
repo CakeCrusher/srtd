@@ -19,7 +19,7 @@ import os
 
 from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
-from ..filter import getMatches
+from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
@@ -39,6 +39,7 @@ class FileExplorer(QWidget):
 
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
+        self.semantic_source_list = []
         # Create file tree view
         file_layout = QVBoxLayout()
         # Create source selection area
@@ -166,14 +167,26 @@ class FileExplorer(QWidget):
         search_layout = QHBoxLayout()
         search_label = QLabel("Filter Dest Files:")
         self.search_bar = QLineEdit()
+        search_button = QPushButton("Select Destination")
+        semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
         search_layout.addWidget(self.search_bar)
+        search_layout.addWidget(semantic_search_button)
+        search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
 
         # Connect search bar changes
         self.search_bar.textChanged.connect(self.on_text_changed)
+
+        # handle semantic search button changes
+        semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
+
+        # Create checkbox
+        # Connect search button click to show message box
+
+        search_button.clicked.connect(self.show_confirmation_window)
 
         # Add layouts to the main layout
         self.main_layout.addLayout(file_layout, 4)
@@ -192,6 +205,11 @@ class FileExplorer(QWidget):
             print("Checkbox is partially checked?")
         else:
             print("Checkbox is checked")
+
+    def on_semantic_search_clicked(self):
+        target = self.search_bar.text()
+        self.semantic_source_list = getMatchesSemantic(target, [])
+        # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
     def show_confirmation_window(self):
         if self.confirmation_window and self.confirmation_window.isVisible():
