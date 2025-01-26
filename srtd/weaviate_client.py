@@ -11,6 +11,9 @@ from .schema import FileObject
 from .openai_client import OpenAIClient
 from dotenv import load_dotenv
 
+from .schema import FileObject
+from .openai_client import OpenAIClient
+from .core import create_truncated_content
 load_dotenv()
 
 class WeaviateClient:
@@ -75,11 +78,14 @@ class WeaviateClient:
             filters=Filter.by_property("path").equal(file.path)
         )
         if len(response.objects) > 0:
-            print(f"{file.path}\t did not reupload, it already exists")
+            print(f"{file.path}\t did not re-upload, it already exists")
             return FileObject(**response.objects[0].properties)
         else:
+            print(f"{file.path}\t uploading...")
             openai_client = OpenAIClient()
+            file.string_content_truncated = create_truncated_content(file.path)
             file.ai_summary = openai_client.file_summary(file)
+            print(f"File summary: {file.ai_summary}")
             return self.upload_file(file)
 
     def semantic_search(self, query: str, limit: int = 10) -> List[tuple[FileObject, float]]:

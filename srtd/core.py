@@ -3,8 +3,9 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from .schema import FileObject
+import PyPDF2
 
 def objectify(entry: os.DirEntry) -> FileObject:
         return FileObject(
@@ -13,8 +14,48 @@ def objectify(entry: os.DirEntry) -> FileObject:
             is_directory= entry.is_dir(),
             created_at= int(entry.stat().st_ctime),
             ai_summary="",
-            string_content_truncated=""
+            string_content_truncated=create_truncated_content(entry.path)
         )
+
+def create_truncated_content(file_path: str, max_chars: int = 2000) -> str:
+    """Get truncated content from a file, supporting text and PDF files"""
+    if not os.path.exists(file_path):
+        return "[File not found]"
+        
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    try:
+        if file_ext == '.pdf':
+            return _read_pdf_content(file_path, max_chars)
+        else:
+            return _read_text_content(file_path, max_chars)
+    except Exception as e:
+        return f"[Error reading file: {str(e)}]"
+
+def _read_text_content(file_path: str, max_chars: int) -> str:
+    """Read content from text files"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read(max_chars)
+            if len(content) == max_chars:
+                content += "..."
+            return content
+    except UnicodeDecodeError:
+        return "[Binary file]"
+
+def _read_pdf_content(file_path: str, max_chars: int) -> str:
+    """Read content from PDF files"""
+    try:
+        with open(file_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            content = ""
+            for page in reader.pages:
+                content += page.extract_text()
+                if len(content) >= max_chars:
+                    return content[:max_chars] + "..."
+            return content
+    except Exception:
+        return "[Error reading PDF]"
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:

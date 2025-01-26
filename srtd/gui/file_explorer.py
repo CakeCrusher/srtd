@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 import os
 
 from srtd.schema import FileObject
+from srtd.semantic_file_uploading import SemanticFileUploading
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
@@ -207,7 +208,7 @@ class FileExplorer(QWidget):
             print("Checkbox is checked")
 
     def on_semantic_search_clicked(self):
-        target = self.search_bar.text()
+        target = self.dest_bar.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
@@ -316,7 +317,10 @@ class FileExplorer(QWidget):
         if not selected_dir:
             print("Please enter a source directory path")
             return
-        res = buildFileList(selected_dir)
+        res = buildFileList(selected_dir)        
+        semantic_upload = SemanticFileUploading()
+        semantic_upload.upload_files(res)
+
         if len(res) == 0:
             print("Source folder not updated.")
             return
