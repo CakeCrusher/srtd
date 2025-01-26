@@ -129,27 +129,36 @@ class FileExplorer(QWidget):
         lex_layout.addWidget(lex_title)
         context_layout.addWidget(context_title)
 
-        def create_file_tree_widget():
+        def create_file_tree_scroll_view():
             tree_widget = QWidget()
             tree_layout = QVBoxLayout(tree_widget)
-            tree_widget.setStyleSheet("background-color: #E6EDDB")
+
+            tree_widget.setStyleSheet(PastelGreen().get_style_sheet())
             tree_widget.setContentsMargins(0, 0, 0, 0)
 
-            # Create folder icon and structure
-            folder_icon = QLabel("📁")
-            folder_icon.setStyleSheet("font-size: 24px;")
-            tree_layout.addWidget(folder_icon)
-
             # Add file structure lines
-            for i in range(6):
-                file_line = QLabel("└→📄 file_name")
-                file_line.setStyleSheet("padding-left: 20px;")
+            for i in range(21):
+                file_line = QLabel("📁   directory_name")
+                file_line.setStyleSheet("text-align: center")
+                file_line.setAlignment(
+                    Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
                 tree_layout.addWidget(file_line)
 
-            return tree_widget
+            scroll_area = QtWidgets.QScrollArea()
+            scroll_area.setStyleSheet(PastelGreen().get_style_sheet())
+            scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize
 
-        lex_layout.addWidget(create_file_tree_widget())
-        context_layout.addWidget(create_file_tree_widget())
+            # Set the tree widget as the content of the scroll area
+            scroll_area.setWidget(tree_widget)
+
+            # Wait a little to allow for stuff to finish loading in
+            QtCore.QTimer.singleShot(100, lambda: scroll_area.verticalScrollBar().setValue(
+                scroll_area.verticalScrollBar().maximum()))
+
+            return scroll_area
+
+        lex_layout.addWidget(create_file_tree_scroll_view())
+        context_layout.addWidget(create_file_tree_scroll_view())
 
         # Add suggestion boxes to content layout
         suggestions_content_layout.addWidget(lex_box)
