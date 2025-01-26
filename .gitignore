@@ -1,2 +1,10 @@
-/.idea/
+.DS_Store
+.idea
 /.venv/
+*.log
+tmp/
+
+*.py[cod]
+*.egg
+build
+htmlcov
