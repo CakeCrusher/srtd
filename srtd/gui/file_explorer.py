@@ -61,6 +61,20 @@ class FileExplorer(QWidget):
         file_layout.addWidget(FileTreeScrollView(self.source_list,
                         PastelYellow().get_style_sheet()))
 
+
+        # todo implement filter below the file view
+        source_filter_layout = QHBoxLayout()
+        source_selection_label = QLabel("Filter Source Files:")
+        source_filter_edit = QLineEdit()
+
+        ## Todo as we type, sort matching files to the bottom of the list
+        # todo is this function the correct choice here?
+        source_filter_edit.textChanged.connect(self.on_text_changed)
+
+        source_filter_layout.addWidget(source_selection_label)
+        source_filter_layout.addWidget(source_filter_edit)
+
+        file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
         # Create file preview area
         preview_layout = QVBoxLayout()
@@ -134,7 +148,9 @@ class FileExplorer(QWidget):
         # get list of destinations for use
         destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
 
-        lex_layout.addWidget(FileTreeScrollView(destination_list, show_path=True))
+        file_tree_scroll_view = FileTreeScrollView(destination_list, show_path=True, has_checkboxes=False)
+        file_tree_scroll_view.file_clicked.connect(self.show_confirmation_window)
+        lex_layout.addWidget(file_tree_scroll_view)
         # context_layout.addWidget(create_file_tree_scroll_view())
 
         suggestions_content_layout.addWidget(lex_box)
@@ -149,7 +165,7 @@ class FileExplorer(QWidget):
 
         # Search bar layout
         search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Files:")
+        search_label = QLabel("Filter Dest Files:")
         self.search_bar = QLineEdit()
         search_button = QPushButton("Select Destination")
         semantic_search_button = QPushButton("Semantic Search")
