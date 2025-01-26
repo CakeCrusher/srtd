@@ -6,4 +6,5 @@ import filter
 # print(core.buildDestinationList(["/home/paul/Pictures"]))
 # print(core.buildDestinationList(["/home/paul/School"]))
 
-print(filter.getMatches("scree", core.buildFileList("/home/paul/Pictures")))
+for file in filter.getMatches("scree", core.buildFileList("/home/paul/Pictures")):
+    print(file['name'])
