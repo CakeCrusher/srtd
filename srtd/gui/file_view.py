@@ -11,11 +11,11 @@ from PySide6.QtWidgets import (
 from .themes import *
 from ..schema import FileObject
 
-def create_file_tree_scroll_view(file_list: list[FileObject]=[]):
+def create_file_tree_scroll_view(file_list: list[FileObject]=[], bg_color_stylesheet=PastelGreen().get_style_sheet()):
     tree_widget = QWidget()
     tree_layout = QVBoxLayout(tree_widget)
 
-    tree_widget.setStyleSheet(PastelGreen().get_style_sheet())
+    tree_widget.setStyleSheet(bg_color_stylesheet)
     tree_widget.setContentsMargins(0, 0, 0, 0)
 
     # Add file structure lines
@@ -31,7 +31,7 @@ def create_file_tree_scroll_view(file_list: list[FileObject]=[]):
         print("no files")
 
     scroll_area = QtWidgets.QScrollArea()
-    scroll_area.setStyleSheet(PastelGreen().get_style_sheet())
+    scroll_area.setStyleSheet(bg_color_stylesheet)
     scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize
 
     # Set the tree widget as the content of the scroll area

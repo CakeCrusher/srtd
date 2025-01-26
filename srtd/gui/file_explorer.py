@@ -43,20 +43,20 @@ class FileExplorer(QWidget):
 
         file_model = QFileSystemModel()
         file_model.setRootPath("")
-        file_tree = QTreeView()
-        file_tree.setModel(file_model)
-        file_tree.setRootIndex(file_model.index(""))
+        # file_tree = QTreeView()
+        # file_tree.setModel(file_model)
+        # file_tree.setRootIndex(file_model.index(""))
 
-        for i in range(1, file_model.columnCount()):
-            file_tree.hideColumn(i)
+        # for i in range(1, file_model.columnCount()):
+        #     file_tree.hideColumn(i)
 
-        file_tree.setColumnWidth(0, file_tree.width())
+        # file_tree.setColumnWidth(0, file_tree.width())
 
         # Set tree view background color
-        file_tree.setStyleSheet(PastelYellow().get_style_sheet())
+        # file_tree.setStyleSheet(PastelYellow().get_style_sheet())
 
-        file_layout.addWidget(file_tree)
-        file_layout.addWidget(create_file_tree_scroll_view(self.source_list))
+        # file_layout.addWidget(file_tree)
+        file_layout.addWidget(create_file_tree_scroll_view(self.source_list, bg_color_stylesheet=PastelYellow().get_style_sheet()))
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
