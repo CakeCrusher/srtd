@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 from .themes import *
 from ..schema import FileObject
 
-def create_file_tree_scroll_view(file_list: list[FileObject]=[], bg_color_stylesheet=PastelGreen().get_style_sheet()):
+def create_file_tree_scroll_view(file_list: list[FileObject]=[], bg_color_stylesheet=PastelGreen().get_style_sheet(), show_path:bool = False):
     tree_widget = QWidget()
     tree_layout = QVBoxLayout(tree_widget)
 
@@ -21,7 +21,8 @@ def create_file_tree_scroll_view(file_list: list[FileObject]=[], bg_color_styles
     # Add file structure lines
     for file in file_list:
         icon = "📁" if file.is_directory else "📄"
-        file_line = QLabel(f"{icon} {file.name}")
+        text = file.path if show_path else file.name
+        file_line = QLabel(f"{icon} {text}")
         file_line.setStyleSheet("text-align: center")
         file_line.setAlignment(
             Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
