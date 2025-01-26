@@ -59,21 +59,22 @@ class FileExplorer(QWidget):
         file_layout.addLayout(source_selection_layout)
 
         # Create file tree view using the source list
-        file_layout.addWidget(FileTreeScrollView(self.source_list,
-                        PastelYellow().get_style_sheet()))
+        self.source_tree = FileTreeScrollView(self.source_list,
+                        PastelYellow().get_style_sheet())
+        file_layout.addWidget(self.source_tree)
 
 
         # todo implement filter below the file view
         source_filter_layout = QHBoxLayout()
         source_selection_label = QLabel("Filter Source Files:")
-        source_filter_edit = QLineEdit()
+        self.source_filter_edit = QLineEdit()
 
         ## Todo as we type, sort matching files to the bottom of the list
         # todo is this function the correct choice here?
-        source_filter_edit.textChanged.connect(self.on_text_changed)
+        self.source_filter_edit.textChanged.connect(self.on_source_filt_changed)
 
         source_filter_layout.addWidget(source_selection_label)
-        source_filter_layout.addWidget(source_filter_edit)
+        source_filter_layout.addWidget(self.source_filter_edit)
 
         file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
@@ -306,14 +307,15 @@ class FileExplorer(QWidget):
     def on_message_box_result(self):
         self.show_confirmation_window()
 
+    def on_source_filt_changed(self):
+        target = self.source_filter_edit.text()
+        self.source_list = getMatches(target, self.source_list)
+        self.source_tree.rerender_tree_layout(self.source_list)
+
     def on_dest_text_changed(self):
         target = self.dest_bar.text()
         self.dest_list = getMatches(target, self.dest_list)
-
         self.dest_view.rerender_tree_layout(self.dest_list)
-        cls()
-        print("\n".join(stringify_file_list(self.dest_list)))
-        print("> ", target)
 
     def on_source_folder_selected(self, source_dir):
         selected_dir = source_dir.strip()
