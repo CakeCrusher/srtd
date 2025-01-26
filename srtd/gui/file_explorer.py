@@ -93,9 +93,9 @@ class FileExplorer(QWidget):
 
         # Create search bar
         search_layout = QHBoxLayout()
-        search_label = QLabel("Search:")
+        search_label = QLabel("Filter Files:")
         self.search_bar = QLineEdit()
-        search_button = QPushButton("Search")
+        search_button = QPushButton("Select Destination")
         search_layout.addWidget(search_label)
         search_layout.addWidget(self.search_bar)
         search_layout.addWidget(search_button)
