@@ -4,8 +4,11 @@ from PySide6.QtWidgets import (
     QApplication,
 )
 
-if __name__ == "__main__":
+def launch_gui():
     app = QApplication([])
     window = FileExplorer(app, PastelYellow())
     window.show()
     app.exec()
+
+if __name__ == "__main__":
+    launch_gui()

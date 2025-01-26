@@ -17,14 +17,14 @@ from PySide6.QtWidgets import (
 
 import os
 
-from srtd.schema import FileObject
-from srtd.semantic_file_uploading import SemanticFileUploading
-from ..core import buildFileList, buildDestinationList
-from ..filter import getMatches, getMatchesSemantic
+from schema import FileObject
+from semantic_file_uploading import SemanticFileUploading
+from core import buildFileList, buildDestinationList
+from filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
-from ..core import move_files
+from core import move_files
 
 
 class FileExplorer(QWidget):
@@ -103,11 +103,11 @@ class FileExplorer(QWidget):
         preview_content_layout = QHBoxLayout(preview_content)
 
         # Add preview icon area (light blue square)
-        preview_icon = QLabel("📄")
-        preview_icon.setFixedSize(200, 200)
-        preview_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        preview_icon.setStyleSheet("font-size: 48px;")
-        preview_icon.setStyleSheet("background-color: #B0E0E0;")
+        # preview_icon = QLabel("📄")
+        # preview_icon.setFixedSize(200, 200)
+        # preview_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # preview_icon.setStyleSheet("font-size: 48px;")
+        # preview_icon.setStyleSheet("background-color: #B0E0E0;")
 
         # Create summary text as instance variable
         self.summary_text = QLabel("Select a file to view details")
@@ -122,7 +122,7 @@ class FileExplorer(QWidget):
 
         # Stack icon and preview
         icon_layout = QVBoxLayout()
-        icon_layout.addWidget(preview_icon)
+        # icon_layout.addWidget(preview_icon)
 
         # Add widgets to preview content layout
         preview_content_layout.addLayout(icon_layout)

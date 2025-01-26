@@ -3,8 +3,8 @@
 from typing import List, Tuple
 from thefuzz import process
 
-from .schema import FileObject
-from .semantic_file_matching import SemanticFileMatching
+from schema import FileObject
+from semantic_file_matching import SemanticFileMatching
 
 def getMatchesLexical(target: str, file_list: List[FileObject]) -> List[FileObject]:
     # Calculate fuzzy match scores for each file

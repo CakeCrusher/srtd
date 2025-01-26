@@ -7,13 +7,11 @@ from weaviate.classes.query import MetadataQuery, Filter
 from weaviate.classes.config import Property, DataType
 import os
 
-from .schema import FileObject
-from .openai_client import OpenAIClient
+from schema import FileObject
+from openai_client import OpenAIClient
 from dotenv import load_dotenv
+from core import create_truncated_content
 
-from .schema import FileObject
-from .openai_client import OpenAIClient
-from .core import create_truncated_content
 load_dotenv()
 
 class WeaviateClient:

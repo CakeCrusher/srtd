@@ -4,7 +4,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import List, Optional
-from .schema import FileObject
+from schema import FileObject
 import PyPDF2
 
 def objectify(entry: os.DirEntry) -> FileObject:

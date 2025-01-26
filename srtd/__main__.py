@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import core
-import cli
+from gui.__main__ import launch_gui
 from dotenv import load_dotenv
 from schema import FileObject
 from weaviate_client import WeaviateClient
@@ -21,6 +20,7 @@ def main(args=None):
     client = WeaviateClient()
     client.ensure_collection(os.getenv("COLLECTION_NAME"))
 
+    launch_gui()
 
     # core.buildFileTree(source_dir)
 
