@@ -273,7 +273,7 @@ class FileExplorer(QWidget):
         # Add the label directly to the layout
         window_layout.addLayout(suggestion_content_layout)
 
-        # Create individual buttons
+        button_layout = QHBoxLayout()
         ok_button = QPushButton("Ok")
         yes_to_all_button = QPushButton("Yes to All")
         cancel_button = QPushButton("Cancel")
@@ -284,9 +284,11 @@ class FileExplorer(QWidget):
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         # Add buttons to the window layout
-        window_layout.addWidget(ok_button)
-        window_layout.addWidget(yes_to_all_button)
-        window_layout.addWidget(cancel_button)
+        button_layout.addWidget(ok_button)
+        button_layout.addWidget(yes_to_all_button)
+        button_layout.addWidget(cancel_button)
+
+        window_layout.addLayout(button_layout)
         # Show the window and start its event loop
         window.show()
         window.exec_()
