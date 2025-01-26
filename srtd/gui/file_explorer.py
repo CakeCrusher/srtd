@@ -40,7 +40,7 @@ class FileExplorer(QWidget):
         self.main_layout = QHBoxLayout()
 
         # get file_list to work with
-        self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
+        self.source_list = buildFileList(os.path.expanduser("~/Downloads"))
         self.semantic_source_list = []
 
         # Create file tree view
