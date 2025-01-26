@@ -28,14 +28,23 @@ class FileExplorer(QWidget):
         self.main_layout = QHBoxLayout()
 
         # Create file tree view
+        file_layout = QVBoxLayout()
+
         file_model = QFileSystemModel()
         file_model.setRootPath("")
         file_tree = QTreeView()
         file_tree.setModel(file_model)
         file_tree.setRootIndex(file_model.index(""))
 
+        for i in range(1, file_model.columnCount()):
+            file_tree.hideColumn(i)
+
+        file_tree.setColumnWidth(0, file_tree.width())
+
         # Set tree view background color
-        file_tree.setStyleSheet(Sand().get_style_sheet())
+        file_tree.setStyleSheet(PastelYellow().get_style_sheet())
+
+        file_layout.addWidget(file_tree)
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -137,31 +146,17 @@ class FileExplorer(QWidget):
         right_column_layout.addLayout(search_layout)
 
         # Create checkbox
-        self.checkbox = QCheckBox("Track State")
-        self.checkbox.setChecked(True)
-        self.checkbox.stateChanged.connect(self.on_checkbox_changed)
-
         # Connect search button click to show message box
         search_button.clicked.connect(self.show_custom_window)
 
-        # Create splitter to resize the file tree and preview area
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(file_tree)
-        splitter.addWidget(QWidget())  # Add the right column layout here for preview and search
 
-        # Set initial splitter sizes to 65% (file tree) and 35% (preview)
-        total_width = self.width()  # Get the total width of the window
-        file_tree_width = int(total_width * 0.65)  # 65% of total width
-        preview_area_width = total_width - file_tree_width  # 35% of total width
-        splitter.setSizes([file_tree_width, preview_area_width])
-
-        # Add layouts to the main layout
-        self.main_layout.addWidget(splitter)
-        self.main_layout.addLayout(right_column_layout)  # Add right column layout (preview and search)
-        self.main_layout.addWidget(self.checkbox)  # Add checkbox to the main layout
+        # Set size ratios for layouts in the main layout
+        self.main_layout.addLayout(file_layout, 4)
+        self.main_layout.addLayout(right_column_layout, 6)  # Add right column layout (preview and search)
 
         # Set layout for the widget
         self.setLayout(self.main_layout)
+        self.setStyleSheet(Sand().get_style_sheet())
         self.resize(1080, 768)
 
     def on_checkbox_changed(self, state):
@@ -255,7 +250,6 @@ class FileExplorer(QWidget):
         window_layout.addWidget(ok_button)
         window_layout.addWidget(yes_to_all_button)
         window_layout.addWidget(cancel_button)
-
         # Show the window and start its event loop
         window.show()
         window.exec_()

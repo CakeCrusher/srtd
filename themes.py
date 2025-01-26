@@ -33,3 +33,8 @@ class Sand(Theme):
         super().__init__()
         self.primary_color = "#ffffff"  # Set primary color to white
         self.secondary_color = "#EEE8AA"  # Pale goldenrod
+
+class PastelYellow(Theme):
+    def __init__(self):
+        super().__init__()
+        self.secondary_color = "#f8f3e7"  # Pale goldenrod
