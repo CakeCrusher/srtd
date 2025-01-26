@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QLabel,
+    QLabel, QHBoxLayout, QCheckBox,
 )
 
 from .themes import *
@@ -20,12 +20,39 @@ def create_file_tree_scroll_view(file_list: list[FileObject]=[], bg_color_styles
 
     # Add file structure lines
     for file in file_list:
+        file_entry = QHBoxLayout()
+        check_box = QCheckBox()
+        check_box.setStyleSheet("""
+            QCheckBox {
+                background-color: #f0f0f0;
+                border: 1px solid #888;
+                padding: 4px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border: 2px solid #888;
+                border-radius: 3px;
+                background-color: #fff;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #4CAF50;
+                border-color: #4CAF50;
+            }
+            QCheckBox::indicator:unchecked {
+                background-color: #fff;
+                border-color: #888;
+            }
+        """)
+        file_entry.addWidget(check_box, 1)
         icon = "📁" if file.is_directory else "📄"
         file_line = QLabel(f"{icon} {file.name}")
         file_line.setStyleSheet("text-align: center")
         file_line.setAlignment(
-            Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-        tree_layout.addWidget(file_line)
+            Qt.AlignmentFlag.AlignLeft)
+        file_entry.addWidget(file_line, 9)
+
+        tree_layout.addLayout(file_entry)
 
     if len(file_list) == 0:
         print("no files")
