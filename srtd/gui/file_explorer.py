@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 import os
 
 from srtd.schema import FileObject
+from srtd.semantic_file_uploading import SemanticFileUploading
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
@@ -301,9 +302,17 @@ class FileExplorer(QWidget):
             print("Please enter a source directory path")
             return
         res = buildFileList(selected_dir)
+        
+        semantic_upload = SemanticFileUploading()
+        semantic_upload.upload_files(res)
+        
+
+
+        
         if res is None:
             return
         self.source_list = res
+        print(f"Length of source list: {len(self.source_list)}")
         print(f"Source directory updated to: {selected_dir}")
 
 

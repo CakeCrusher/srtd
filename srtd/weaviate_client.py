@@ -75,9 +75,10 @@ class WeaviateClient:
             filters=Filter.by_property("path").equal(file.path)
         )
         if len(response.objects) > 0:
-            print(f"{file.path}\t did not reupload, it already exists")
+            print(f"{file.path}\t did not re-upload, it already exists")
             return FileObject(**response.objects[0].properties)
         else:
+            print(f"{file.path}\t uploading...")
             openai_client = OpenAIClient()
             file.ai_summary = openai_client.file_summary(file)
             return self.upload_file(file)
