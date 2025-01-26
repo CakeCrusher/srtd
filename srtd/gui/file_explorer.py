@@ -14,8 +14,11 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 
-from themes import *
+import os
+from ..core import buildFileList, buildDestinationList
+from ..filter import getMatches
 
+from .themes import *
 
 class FileExplorer(QWidget):
     def __init__(self, app, theme=Sand()):
@@ -27,6 +30,8 @@ class FileExplorer(QWidget):
         # Create layout for the file explorer
         self.main_layout = QHBoxLayout()
 
+        # get file_list to work with
+        self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         # Create file tree view
         file_model = QFileSystemModel()
         file_model.setRootPath("")
@@ -241,5 +246,23 @@ class FileExplorer(QWidget):
     def on_message_box_result(self):
         self.show_custom_window()
 
+
+# Now, to clear the screen
     def on_text_changed(self):
-        print("Text changed: ", self.search_bar.text())
+        target = self.search_bar.text()
+        # business logic
+        self.source_list = getMatches(target, self.source_list)
+
+        # debug cli output
+        cls()
+        print("\n".join(stringify_file_list(self.source_list)))
+        print("> ", target)
+
+
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+
+def stringify_file_list(file_list: str):
+    # turn file list into list of strings of names
+    return [file['name'] for file in file_list if 'name' in file]

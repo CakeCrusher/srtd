@@ -1,5 +1,5 @@
-from file_explorer import FileExplorer
-from themes import *
+from .file_explorer import FileExplorer
+from .themes import *
 from PySide6.QtWidgets import (
     QApplication,
 )
