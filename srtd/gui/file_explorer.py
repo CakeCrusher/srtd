@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QCheckBox,
-    QMessageBox
+    QMessageBox, QScrollArea
 )
 
 import os
@@ -113,13 +113,19 @@ class FileExplorer(QWidget):
         self.summary_text.setWordWrap(True)
         self.summary_text.setStyleSheet(PastelGreen().get_style_sheet())
 
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(self.summary_text)
+
+        # scroll_area.setFixedHeight(200)
+
         # Stack icon and preview
         icon_layout = QVBoxLayout()
         icon_layout.addWidget(preview_icon)
 
         # Add widgets to preview content layout
         preview_content_layout.addLayout(icon_layout)
-        preview_content_layout.addWidget(self.summary_text)
+        preview_content_layout.addWidget(scroll_area)
 
         # Connect file click signals to update summary
         self.source_tree.file_clicked.connect(self.update_summary)
