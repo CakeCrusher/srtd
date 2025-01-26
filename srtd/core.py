@@ -40,18 +40,19 @@ def destinationHelper(dir):
     dir_list = []
 
     # get directory object
-    with os.scandir(os.path.abspath(dir)) as entries:
-        for entry in entries:
-            # skip symlinks and regular files
-            if (entry.is_symlink() or not entry.is_dir):
-                continue
+    if os.path.isdir(dir):
+        with os.scandir(os.path.abspath(dir)) as entries:
+            for entry in entries:
+                # skip symlinks and regular files
+                if (entry.is_symlink() or not entry.is_dir()):
+                    continue
 
-            print(entry.name)
-            # only append the path to the list because that's all that we care about
-            dir_list.append(entry.path)
+                print(entry.name)
+                # only append the path to the list because that's all that we care about
+                dir_list.append(entry.path)
 
-            # recurse in and apply children
-            dir_list.extend(destinationHelper(entry))
+                # recurse in and apply children
+                dir_list.extend(destinationHelper(entry))
 
     return dir_list
 
