@@ -20,7 +20,7 @@ import os
 from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
 from ..filter import getMatches, getMatchesSemantic
-from .file_view import FileTreeScrollView, create_file_tree_scroll_view
+from .file_view import FileTreeScrollView
 
 from .themes import *
 
