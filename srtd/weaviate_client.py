@@ -1,10 +1,13 @@
-# src/services/weaviate_client.py
+# srtd/weaviate_client.py
 
 from typing import List, cast
 import weaviate
 from weaviate.classes.config import Configure
-from weaviate.classes.query import MetadataQuery
+from weaviate.classes.query import MetadataQuery, Filter
+from weaviate.classes.config import Property, DataType
 import os
+
+from schema import FileObject
 
 
 class WeaviateClient:
@@ -20,8 +23,13 @@ class WeaviateClient:
             grpc_port=int(os.getenv("WEAVIATE_GRPC_PORT", "50051")),
             headers=headers,
         )
-        meta_info = self.client.get_meta()
-        print(meta_info)
+        try:
+            if not os.getenv("COLLECTION_NAME"):
+                raise ValueError("COLLECTION_NAME is not set")
+            self.ensure_collection(os.getenv("COLLECTION_NAME"))
+        except Exception as e:
+            print(f"WeaviateClient INIT Error: {e}")
+        self.collection = self.client.collections.get(os.getenv("COLLECTION_NAME"))
 
     def ensure_collection(self, collection_name: str) -> bool:
         if self.client.collections.exists(collection_name):
@@ -30,16 +38,58 @@ class WeaviateClient:
         else:
             self.client.collections.create(
                 collection_name,
+                # properties=[
+                #     Property(name="name", data_type=DataType.TEXT),
+                #     Property(name="path", data_type=DataType.TEXT),
+                #     Property(name="string_content_truncated", data_type=DataType.TEXT),
+                #     Property(name="is_directory", data_type=DataType.BOOLEAN),
+                #     Property(name="created_at", data_type=DataType.INT),
+                #     Property(name="ai_summary", data_type=DataType.TEXT)
+                # ],
                 vectorizer_config=[
                     Configure.NamedVectors.text2vec_voyageai(
-                        name="title_vector",
-                        source_properties=["text_to_embed"],
-                        model="voyage-2",
+                        name="ai_summary_vector",
+                        source_properties=["ai_summary"],
+                        model="voyage-3-lite",
                     )
                 ],
             )
             print(f"Collection '{collection_name}' created successfully")
             return True
+        
+    def upload_file(self, file: FileObject) -> bool:
+        try:
+            self.collection.data.insert(file.model_dump())
+            return True
+        except Exception as e:
+            print(f"WeaviateClient upload_file Error: {e}")
+            return False
+        
+    def upsert_file(self, file: FileObject) -> bool:
+        # check if file exists if it does do nothing otherwise upload it
+        response = self.collection.query.fetch_objects(
+            limit=2,
+            filters=Filter.by_property("path").equal(file.path)
+        )
+        if len(response.objects) > 0:
+            return False
+        else:
+            return self.upload_file(file)
+
+    def semantic_search(self, query: str, limit: int = 10) -> List[tuple[FileObject, float]]:
+        response = self.collection.query.hybrid(
+            query=query,
+            limit=limit,
+            return_metadata=MetadataQuery(score=True)
+        )
+        return [(FileObject(**obj.properties), obj.metadata.score) for obj in response.objects]
+    
+    def retrieve_all_files_from_directory(self, directory: str) -> List[FileObject]:
+        response = self.collection.query.fetch_objects()
+        return [FileObject(**obj.properties) for obj in response.objects]
+        
+        
+        
 
     # def add_objects(self, collection_name: str, objects_data: List[ChunkData]) -> None:
     #     if not self.client.collections.exists(collection_name):
