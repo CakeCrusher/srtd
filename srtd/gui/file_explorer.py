@@ -317,9 +317,11 @@ class FileExplorer(QWidget):
             print("Please enter a source directory path")
             return
         res = buildFileList(selected_dir)
-        if res is None:
+        if len(res) == 0:
+            print("Source folder not updated.")
             return
         self.source_list = res
+        self.source_tree.rerender_tree_layout(self.source_list)
         print(f"Source directory updated to: {selected_dir}")
 
 
