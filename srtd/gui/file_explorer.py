@@ -205,11 +205,13 @@ class FileExplorer(QWidget):
         window = QtWidgets.QDialog()
         window.setWindowTitle("Search Options")
 
+        window.setStyleSheet(PastelGreen().get_style_sheet())
+
         # Create a vertical layout for the window
         window_layout = QtWidgets.QVBoxLayout(window)
 
         lex_suggestion_layout = QVBoxLayout()
-        lex_suggestion_label = QLabel("Lexical Suggestions:")
+        lex_suggestion_label = QLabel("Confirm moves:")
         lex_suggestion_label.setFixedHeight(25)
         lex_suggestion_layout.addWidget(lex_suggestion_label)
         lex_suggestion_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -236,6 +238,9 @@ class FileExplorer(QWidget):
         )
         suggestion_content_text.setWordWrap(True)
         suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
+        suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        suggestion_content_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        suggestion_content_text.setStyleSheet("font-size: 20px;")
         content_layout.addWidget(suggestion_content_text)
 
         # Set the content widget for the scroll area
@@ -243,15 +248,19 @@ class FileExplorer(QWidget):
 
         # Add the scroll area to the layout
         suggestion_content_graphic = QtWidgets.QLabel("→")
+        suggestion_content_graphic.setStyleSheet("font-size: 75px;")
         suggestion_content_layout.addWidget(scroll_area, 5)
-
 
         dest_directory_layout = QVBoxLayout()
         dest_directory_layout.setSpacing(0)
-        dest_directory_image = QtWidgets.QLabel("📁")
-        dest_directory_image.setStyleSheet("font-size: 24px;")
-        dest_directory_layout.addWidget(dest_directory_image)
+        dest_directory_layout.setContentsMargins(0, 0, 0, 0)
+        dest_directory_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        dest_directory_image = QtWidgets.QLabel("📁")
+        dest_directory_image.setStyleSheet(PastelGreen().get_style_sheet())
+        dest_directory_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        dest_directory_image.setStyleSheet("font-size: 48px;")
+        dest_directory_layout.addWidget(dest_directory_image)
         dest_directory_text = QtWidgets.QLabel("Destination Directory TODO:")
         dest_directory_text.setWordWrap(True)
         dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
@@ -260,8 +269,6 @@ class FileExplorer(QWidget):
 
         suggestion_content_layout.addWidget(suggestion_content_graphic, 2)
         suggestion_content_layout.addLayout(dest_directory_layout, 2)
-
-
 
         # Add the label directly to the layout
         window_layout.addLayout(suggestion_content_layout)
