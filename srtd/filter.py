@@ -27,16 +27,15 @@ def getMatchesSemantic(target: str, file_list: List[FileObject]) -> List[FileObj
     semantic_matcher = SemanticFileMatching()
     semantic_results = semantic_matcher.match_files(target, file_list)
     
-    print("\nSemantic matches:")
-    for file in semantic_results:
-        print(f"{file.name}\t{file.ai_summary}")
+    # print("\nSemantic matches:")
+    # for file in semantic_results:
+    #     print(f"{file.name}\t{file.ai_summary}")
     
     return semantic_results
 
 def getMatches(target: str, file_list: List[FileObject]) -> List[FileObject]:
     # Get both types of matches
     lexical_results = getMatchesLexical(target, file_list)
-    semantic_results = getMatchesSemantic(target, file_list)
     
     # For now, return only lexical results
     return lexical_results

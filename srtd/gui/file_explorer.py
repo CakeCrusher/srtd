@@ -19,7 +19,7 @@ import os
 
 from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
-from ..filter import getMatches
+from ..filter import getMatches, getMatchesSemantic
 from .file_view import create_file_tree_scroll_view
 
 from .themes import *
@@ -38,6 +38,7 @@ class FileExplorer(QWidget):
 
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
+        self.semantic_source_list = []
         # Create file tree view
         file_layout = QVBoxLayout()
 
@@ -154,8 +155,10 @@ class FileExplorer(QWidget):
         search_label = QLabel("Filter Files:")
         self.search_bar = QLineEdit()
         search_button = QPushButton("Select Destination")
+        semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
         search_layout.addWidget(self.search_bar)
+        search_layout.addWidget(semantic_search_button)
         search_layout.addWidget(search_button)
 
         # Add search bar layout
@@ -163,6 +166,9 @@ class FileExplorer(QWidget):
 
         # handle search bar changes
         self.search_bar.textChanged.connect(self.on_text_changed)
+
+        # handle semantic search button changes
+        semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
 
         # Create checkbox
         # Connect search button click to show message box
@@ -187,6 +193,11 @@ class FileExplorer(QWidget):
             print("Checkbox is partially checked?")
         else:
             print("Checkbox is checked")
+
+    def on_semantic_search_clicked(self):
+        target = self.search_bar.text()
+        self.semantic_source_list = getMatchesSemantic(target, [])
+        # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
     def show_confirmation_window(self):
         if self.confirmation_window and self.confirmation_window.isVisible():
