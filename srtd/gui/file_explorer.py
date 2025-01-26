@@ -24,6 +24,7 @@ from .file_view import create_file_tree_scroll_view
 
 from .themes import *
 
+
 class FileExplorer(QWidget):
     def __init__(self, app, theme=Sand()):
         super().__init__()
@@ -40,23 +41,24 @@ class FileExplorer(QWidget):
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         # Create file tree view
         file_layout = QVBoxLayout()
+        # Create source selection area
+        source_selection_layout = QHBoxLayout()
+        source_selection_label = QLabel("Source Folder:")
+        source_selection_edit = QLineEdit()
+        source_select_button = QPushButton("Select folder")
 
-        file_model = QFileSystemModel()
-        file_model.setRootPath("")
-        # file_tree = QTreeView()
-        # file_tree.setModel(file_model)
-        # file_tree.setRootIndex(file_model.index(""))
+        # Connect source_select_button to update source directory and rebuild file list
+        source_select_button.clicked.connect(
+            lambda: self.on_source_folder_selected(source_selection_edit.text()))
 
-        # for i in range(1, file_model.columnCount()):
-        #     file_tree.hideColumn(i)
+        source_selection_layout.addWidget(source_selection_label)
+        source_selection_layout.addWidget(source_selection_edit)
+        source_selection_layout.addWidget(source_select_button)
+        file_layout.addLayout(source_selection_layout)
 
-        # file_tree.setColumnWidth(0, file_tree.width())
-
-        # Set tree view background color
-        # file_tree.setStyleSheet(PastelYellow().get_style_sheet())
-
-        # file_layout.addWidget(file_tree)
-        file_layout.addWidget(create_file_tree_scroll_view(self.source_list, bg_color_stylesheet=PastelYellow().get_style_sheet()))
+        # Create file tree view using the source list
+        file_layout.addWidget(create_file_tree_scroll_view(self.source_list,
+                                                           bg_color_stylesheet=PastelYellow().get_style_sheet()))
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -83,11 +85,7 @@ class FileExplorer(QWidget):
                               "adipiscing elit. Sed do eiusmod tempor incididunt ut "
                               "labore et dolore magna aliqua. Ut enim ad minim veniam, "
                               "quis nostrud exercitation ullamco laboris nisi ut aliquip "
-                              "ex ea commodo consequat. Duis aute irure dolor in "
-                              "reprehenderit in voluptate velit esse cillum dolore eu "
-                              "fugiat nulla pariatur. Excepteur sint occaecat cupidatat "
-                              "non proident, sunt in culpa qui officia deserunt mollit "
-                              "anim id est laborum")
+                              "ex ea commodo consequat.")
         summary_text.setWordWrap(True)
 
         # Stack icon and preview
@@ -103,10 +101,8 @@ class FileExplorer(QWidget):
         preview_layout.addWidget(preview_content)
         preview_content.setMaximumHeight(240)
 
-        # ---------Suggestions Section ------------
-        # Create suggestions section
+        # Suggestions Section
         suggestions_layout = QVBoxLayout()
-
         suggestions_title = QLabel("Suggestions")
         suggestions_title.setFixedHeight(25)
         suggestions_title.setStyleSheet(Sand().get_style_sheet())
@@ -115,7 +111,7 @@ class FileExplorer(QWidget):
         suggestions_content = QWidget()
         suggestions_content_layout = QHBoxLayout(suggestions_content)
 
-        # Create lexicographical and contextual suggestion boxes
+        # Create suggestion boxes
         lex_box = QWidget()
         # context_box = QWidget()
         lex_layout = QVBoxLayout(lex_box)
@@ -140,19 +136,17 @@ class FileExplorer(QWidget):
         lex_layout.addWidget(create_file_tree_scroll_view(destination_list, show_path=True))
         # context_layout.addWidget(create_file_tree_scroll_view())
 
-        # Add suggestion boxes to content layout
         suggestions_content_layout.addWidget(lex_box)
         # suggestions_content_layout.addWidget(context_box)
 
-        # Add everything to suggestions layout
         suggestions_layout.addWidget(suggestions_title)
         suggestions_layout.addWidget(suggestions_content)
 
-        # -----Combine preview and search into a single layout----
+        # Combine preview and suggestions
         right_column_layout.addLayout(preview_layout)
         right_column_layout.addLayout(suggestions_layout)
 
-        # Create search bar
+        # Search bar layout
         search_layout = QHBoxLayout()
         search_label = QLabel("Filter Files:")
         self.search_bar = QLineEdit()
@@ -164,14 +158,13 @@ class FileExplorer(QWidget):
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
 
-        # handle search bar changes
+        # Connect search bar changes
         self.search_bar.textChanged.connect(self.on_text_changed)
 
-        # Create checkbox
-        # Connect search button click to show message box
+        # Connect search button to show confirmation window
         search_button.clicked.connect(self.show_confirmation_window)
 
-        # Set size ratios for layouts in the main layout
+        # Add layouts to the main layout
         self.main_layout.addLayout(file_layout, 4)
         self.main_layout.addLayout(right_column_layout, 6)
 
@@ -180,10 +173,8 @@ class FileExplorer(QWidget):
         self.setStyleSheet(Sand().get_style_sheet())
         self.resize(1080, 768)
 
+    # Handlers for various button clicks
     def on_checkbox_changed(self, state):
-        # Handle checkbox state changes here
-        print(f"Checkbox state changed to {state}")
-        print(f"checkbox state type is {type(state)}")
         if state == Qt.CheckState.Unchecked.value:
             print("Checkbox is unchecked")
         elif state == Qt.CheckState.PartiallyChecked.value:
@@ -193,63 +184,45 @@ class FileExplorer(QWidget):
 
     def show_confirmation_window(self):
         if self.confirmation_window and self.confirmation_window.isVisible():
-            print("Confirmation window is already visible")
             self.confirmation_window.raise_()
             self.confirmation_window.activateWindow()
             return
 
-        # Create a custom window
         self.confirmation_window = QtWidgets.QDialog(self)
         self.confirmation_window.setWindowTitle("Search Options")
         self.confirmation_window.setStyleSheet(PastelGreen().get_style_sheet())
 
-        # Create a vertical layout for the window
         window_layout = QtWidgets.QVBoxLayout(self.confirmation_window)
-
         lex_suggestion_layout = QVBoxLayout()
         lex_suggestion_label = QLabel("Confirm moves:")
         lex_suggestion_label.setFixedHeight(25)
-        lex_suggestion_layout.addWidget(lex_suggestion_label)
         lex_suggestion_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lex_suggestion_label.setStyleSheet(ForestGreen().get_style_sheet() +
-                                           "font-weight: bold;"
-                                           " font-size: 20px;"
-                                           " text-align: center;")
+        lex_suggestion_label.setStyleSheet(
+            ForestGreen().get_style_sheet() + "font-weight: bold; font-size: 20px;")
 
         window_layout.addLayout(lex_suggestion_layout)
-        self.confirmation_window.resize(800, 600)
         suggestion_content_layout = QHBoxLayout()
-        # Instead, use a QLabel with word wrap
-        # Create a scroll area
-        scroll_area = QtWidgets.QScrollArea()
-        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize
 
-        # Create a widget to hold the content
+        scroll_area = QtWidgets.QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
         content_widget = QtWidgets.QWidget()
         content_layout = QVBoxLayout(content_widget)
 
-        # Add the suggestion content to the widget
-        suggestion_content_text = QtWidgets.QLabel(
-            "File one\nFile two\nFile three\nFile four\n"
-        )
+        suggestion_content_text = QtWidgets.QLabel("File one\nFile two\nFile three\nFile four\n")
         suggestion_content_text.setWordWrap(True)
         suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
         suggestion_content_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        suggestion_content_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        suggestion_content_text.setStyleSheet("font-size: 20px;")
         content_layout.addWidget(suggestion_content_text)
 
-        # Set the content widget for the scroll area
         scroll_area.setWidget(content_widget)
 
-        # Add the scroll area to the layout
         suggestion_content_graphic = QtWidgets.QLabel("→")
         suggestion_content_graphic.setStyleSheet("font-size: 75px;")
         suggestion_content_layout.addWidget(scroll_area, 5)
+        suggestion_content_layout.addWidget(suggestion_content_graphic, 2)
 
         dest_directory_layout = QVBoxLayout()
-        dest_directory_layout.setSpacing(0)
-        dest_directory_layout.setContentsMargins(0, 0, 0, 0)
         dest_directory_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         dest_directory_image = QtWidgets.QLabel("📁")
@@ -257,15 +230,14 @@ class FileExplorer(QWidget):
         dest_directory_image.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         dest_directory_image.setStyleSheet("font-size: 48px;")
         dest_directory_layout.addWidget(dest_directory_image)
+
         dest_directory_text = QtWidgets.QLabel("Destination Directory TODO:")
         dest_directory_text.setWordWrap(True)
         dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
         dest_directory_layout.addWidget(dest_directory_text)
 
-        suggestion_content_layout.addWidget(suggestion_content_graphic, 2)
         suggestion_content_layout.addLayout(dest_directory_layout, 2)
 
-        # Add the label directly to the layout
         window_layout.addLayout(suggestion_content_layout)
 
         button_layout = QHBoxLayout()
@@ -273,19 +245,16 @@ class FileExplorer(QWidget):
         yes_to_all_button = QPushButton("Yes to All")
         cancel_button = QPushButton("Cancel")
 
-        # Connect button signals to slots
         ok_button.clicked.connect(self.on_ok_clicked)
         yes_to_all_button.clicked.connect(self.on_yes_to_all_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
-        # Add buttons to the window layout
         button_layout.addWidget(ok_button)
         button_layout.addWidget(yes_to_all_button)
         button_layout.addWidget(cancel_button)
 
         window_layout.addLayout(button_layout)
 
-        # Show the window and start its event loop
         self.confirmation_window.show()
         self.confirmation_window.exec()
 
@@ -306,23 +275,29 @@ class FileExplorer(QWidget):
     def on_message_box_result(self):
         self.show_confirmation_window()
 
-
     def on_text_changed(self):
         target = self.search_bar.text()
-        # business logic
         self.source_list = getMatches(target, self.source_list)
-
-        # debug cli output
         cls()
         print("\n".join(stringify_file_list(self.source_list)))
         print("> ", target)
 
+    def on_source_folder_selected(self, source_dir):
+        selected_dir = source_dir.strip()
+        if not selected_dir:
+            print("Please enter a source directory path")
+            return
+        res = buildFileList(selected_dir)
+        if res is None:
+            return
+        self.source_list = res
+        print(f"Source directory updated to: {selected_dir}")
+
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def stringify_file_list(file_list: List[FileObject]):
     # turn file list into list of strings of names
     return [file.name for file in file_list]
-
