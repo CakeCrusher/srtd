@@ -40,6 +40,7 @@ class FileExplorer(QWidget):
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         self.semantic_source_list = []
+
         # Create file tree view
         file_layout = QVBoxLayout()
         # Create source selection area
@@ -129,7 +130,7 @@ class FileExplorer(QWidget):
         # Create suggestion boxes
         lex_box = QWidget()
         # context_box = QWidget()
-        lex_layout = QVBoxLayout(lex_box)
+        dest_layout = QVBoxLayout(lex_box)
         # context_layout = QVBoxLayout(context_box)
 
         # Add titles for suggestion boxes
@@ -142,16 +143,14 @@ class FileExplorer(QWidget):
         lex_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
         # context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
 
-        lex_layout.addWidget(lex_title)
+        dest_layout.addWidget(lex_title)
         # context_layout.addWidget(context_title)
 
         # get list of destinations for use
-        destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
-
-        file_tree_scroll_view = FileTreeScrollView(destination_list, show_path=True, has_checkboxes=False)
-        file_tree_scroll_view.file_clicked.connect(self.show_confirmation_window)
-        lex_layout.addWidget(file_tree_scroll_view)
-        # context_layout.addWidget(create_file_tree_scroll_view())
+        self.dest_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
+        self.dest_view = FileTreeScrollView(self.dest_list, show_path=True, has_checkboxes=False)
+        self.dest_view.file_clicked.connect(self.show_confirmation_window)
+        dest_layout.addWidget(self.dest_view)
 
         suggestions_content_layout.addWidget(lex_box)
         # suggestions_content_layout.addWidget(context_box)
@@ -166,19 +165,22 @@ class FileExplorer(QWidget):
         # Search bar layout
         search_layout = QHBoxLayout()
         search_label = QLabel("Filter Dest Files:")
-        self.search_bar = QLineEdit()
+        self.dest_bar = QLineEdit()
+        
         search_button = QPushButton("Select Destination")
         semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
-        search_layout.addWidget(self.search_bar)
+
+        search_layout.addWidget(self.dest_bar)
         search_layout.addWidget(semantic_search_button)
+
         search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
 
         # Connect search bar changes
-        self.search_bar.textChanged.connect(self.on_text_changed)
+        self.dest_bar.textChanged.connect(self.on_dest_text_changed)
 
         # handle semantic search button changes
         semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
@@ -304,11 +306,13 @@ class FileExplorer(QWidget):
     def on_message_box_result(self):
         self.show_confirmation_window()
 
-    def on_text_changed(self):
-        target = self.search_bar.text()
-        self.source_list = getMatches(target, self.source_list)
+    def on_dest_text_changed(self):
+        target = self.dest_bar.text()
+        self.dest_list = getMatches(target, self.dest_list)
+
+        self.dest_view.rerender_tree_layout(self.dest_list)
         cls()
-        print("\n".join(stringify_file_list(self.source_list)))
+        print("\n".join(stringify_file_list(self.dest_list)))
         print("> ", target)
 
     def on_source_folder_selected(self, source_dir):

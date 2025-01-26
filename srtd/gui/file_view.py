@@ -77,10 +77,25 @@ class FileTreeScrollView(QScrollArea):
     def adjust_scroll_bar(self):
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
+    def rerender_tree_layout(self, file_list=[]):
+        # replace file list
+        self.file_list = file_list
+
+        tree_widget = self.widget()  # Get the current widget in the scroll area
+        if tree_widget is not None:
+            tree_layout = tree_widget.layout()
+            if tree_layout is not None:
+                while tree_layout.count():
+                    item = tree_layout.takeAt(0)  # Take the first item from the layout
+                    if item.widget():
+                        item.widget().deleteLater()  # If the item is a widget, delete it
+            tree_widget.deleteLater()  # Finally, delete the tree widget itself
+
+        self.setup_ui()  # Optionally re-setup the UI if needed
+
     def on_file_clicked(self, file_path):
         # Print the clicked file path to the console
         print(f"File clicked: {file_path}")
-
 
 checkbox_styling = """
             QCheckBox {
