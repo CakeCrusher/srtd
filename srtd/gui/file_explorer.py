@@ -165,18 +165,18 @@ class FileExplorer(QWidget):
         right_column_layout.addLayout(suggestions_layout)
 
         # Search bar layout
-        search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Dest Files:")
+        dest_filter_layout = QHBoxLayout()
+        dest_filter_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
 
         semantic_search_button = QPushButton("Semantic Search")
-        search_layout.addWidget(search_label)
+        dest_filter_layout.addWidget(dest_filter_label)
 
-        search_layout.addWidget(self.dest_bar)
-        search_layout.addWidget(semantic_search_button)
+        dest_filter_layout.addWidget(self.dest_bar)
+        dest_filter_layout.addWidget(semantic_search_button)
 
         # Add search bar layout
-        right_column_layout.addLayout(search_layout)
+        right_column_layout.addLayout(dest_filter_layout)
 
         # Connect search bar changes
         self.dest_bar.textChanged.connect(self.on_dest_text_changed)
