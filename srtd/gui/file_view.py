@@ -1,18 +1,25 @@
-#!/usr/bin/env python3
-
 from PySide6 import QtCore, QtWidgets
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QLabel, QHBoxLayout, QCheckBox, QScrollArea
+    QHBoxLayout,
+    QCheckBox,
+    QScrollArea,
+    QPushButton,
 )
+from typing import List
+from ..schema import FileObject
 
 from .themes import *
 from ..schema import FileObject
 
+
 class FileTreeScrollView(QScrollArea):
-    def __init__(self, file_list=[], bg_color_stylesheet=None, show_path=False, parent=None):
+    # Define the `file_clicked` signal at the class level
+    file_clicked = Signal(str)
+
+    def __init__(self, file_list=[], bg_color_stylesheet=None, show_path=False, parent=None, has_checkboxes: bool = True):
         super().__init__(parent)
 
         # Set background color if provided
@@ -20,6 +27,10 @@ class FileTreeScrollView(QScrollArea):
 
         self.file_list = file_list
         self.show_path = show_path
+        self.has_checkboxes = has_checkboxes
+
+        # Connect the signal to a slot that prints to the console
+        self.file_clicked.connect(self.on_file_clicked)
 
         self.setup_ui()
 
@@ -34,15 +45,23 @@ class FileTreeScrollView(QScrollArea):
         # Add file structure lines
         for file in self.file_list:
             file_entry = QHBoxLayout()
-            check_box = QCheckBox()
-            check_box.setStyleSheet(checkbox_styling)
-            file_entry.addWidget(check_box, 1)
+            if self.has_checkboxes:
+                check_box = QCheckBox()
+                check_box.setStyleSheet(checkbox_styling)
+                file_entry.addWidget(check_box, 1)
+
             icon = "📁" if file.is_directory else "📄"
             text = file.path if self.show_path else file.name
-            file_line = QLabel(f"{icon} {text}")
-            file_line.setStyleSheet("text-align: center;")
-            file_line.setAlignment(Qt.AlignmentFlag.AlignLeft)
-            file_entry.addWidget(file_line, 9)
+
+            # Use QPushButton for clickable behavior
+            file_button = QPushButton(f"{icon} {text}")
+            file_button.setStyleSheet("border: none; text-align: left;")
+
+            # Pass the current file path explicitly using a default argument
+            file_button.clicked.connect(
+                lambda checked, path=file.path: self.file_clicked.emit(path)
+            )
+            file_entry.addWidget(file_button, 9)
 
             tree_layout.addLayout(file_entry)
 
@@ -74,6 +93,9 @@ class FileTreeScrollView(QScrollArea):
 
         self.setup_ui()  # Optionally re-setup the UI if needed
 
+    def on_file_clicked(self, file_path):
+        # Print the clicked file path to the console
+        print(f"File clicked: {file_path}")
 
 checkbox_styling = """
             QCheckBox {

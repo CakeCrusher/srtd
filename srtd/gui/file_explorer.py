@@ -19,7 +19,7 @@ import os
 
 from srtd.schema import FileObject
 from ..core import buildFileList, buildDestinationList
-from ..filter import getMatches
+from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
@@ -39,6 +39,7 @@ class FileExplorer(QWidget):
 
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
+        self.semantic_source_list = []
 
         # Create file tree view
         file_layout = QVBoxLayout()
@@ -61,6 +62,20 @@ class FileExplorer(QWidget):
         file_layout.addWidget(FileTreeScrollView(self.source_list,
                         PastelYellow().get_style_sheet()))
 
+
+        # todo implement filter below the file view
+        source_filter_layout = QHBoxLayout()
+        source_selection_label = QLabel("Filter Source Files:")
+        source_filter_edit = QLineEdit()
+
+        ## Todo as we type, sort matching files to the bottom of the list
+        # todo is this function the correct choice here?
+        source_filter_edit.textChanged.connect(self.on_text_changed)
+
+        source_filter_layout.addWidget(source_selection_label)
+        source_filter_layout.addWidget(source_filter_edit)
+
+        file_layout.addLayout(source_filter_layout)
         right_column_layout = QVBoxLayout()
         # Create file preview area
         preview_layout = QVBoxLayout()
@@ -133,9 +148,9 @@ class FileExplorer(QWidget):
 
         # get list of destinations for use
         self.dest_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
-        self.dest_view = FileTreeScrollView(self.dest_list, show_path=True)
+        self.dest_view = FileTreeScrollView(self.dest_list, show_path=True, has_checkboxes=False)
+        self.dest_view.file_clicked.connect(self.show_confirmation_window)
         dest_layout.addWidget(self.dest_view)
-        # context_layout.addWidget(create_file_tree_scroll_view())
 
         suggestions_content_layout.addWidget(lex_box)
         # suggestions_content_layout.addWidget(context_box)
@@ -149,11 +164,16 @@ class FileExplorer(QWidget):
 
         # Search bar layout
         search_layout = QHBoxLayout()
-        search_label = QLabel("Filter Files:")
+        search_label = QLabel("Filter Dest Files:")
         self.dest_bar = QLineEdit()
+        
         search_button = QPushButton("Select Destination")
+        semantic_search_button = QPushButton("Semantic Search")
         search_layout.addWidget(search_label)
+
         search_layout.addWidget(self.dest_bar)
+        search_layout.addWidget(semantic_search_button)
+
         search_layout.addWidget(search_button)
 
         # Add search bar layout
@@ -162,7 +182,12 @@ class FileExplorer(QWidget):
         # Connect search bar changes
         self.dest_bar.textChanged.connect(self.on_dest_text_changed)
 
-        # Connect search button to show confirmation window
+        # handle semantic search button changes
+        semantic_search_button.clicked.connect(self.on_semantic_search_clicked)
+
+        # Create checkbox
+        # Connect search button click to show message box
+
         search_button.clicked.connect(self.show_confirmation_window)
 
         # Add layouts to the main layout
@@ -182,6 +207,11 @@ class FileExplorer(QWidget):
             print("Checkbox is partially checked?")
         else:
             print("Checkbox is checked")
+
+    def on_semantic_search_clicked(self):
+        target = self.search_bar.text()
+        self.semantic_source_list = getMatchesSemantic(target, [])
+        # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
     def show_confirmation_window(self):
         if self.confirmation_window and self.confirmation_window.isVisible():

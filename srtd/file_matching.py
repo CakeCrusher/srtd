@@ -1,6 +1,6 @@
 from typing import List
-from schema import FileObject
-from weaviate_client import WeaviateClient
+from .schema import FileObject
+from .weaviate_client import WeaviateClient
 
 class FileMatching:
     def __init__(self):
