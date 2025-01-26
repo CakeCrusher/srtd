@@ -26,6 +26,8 @@ class FileExplorer(QWidget):
         self.app = app
         self.theme = theme
 
+        self.confirmation_window = None
+
         # Set the theme
         # Create layout for the file explorer
         self.main_layout = QHBoxLayout()
@@ -201,14 +203,19 @@ class FileExplorer(QWidget):
             print("Checkbox is checked")
 
     def show_confirmation_window(self):
-        # Create a custom window
-        window = QtWidgets.QDialog()
-        window.setWindowTitle("Search Options")
+        if self.confirmation_window and self.confirmation_window.isVisible():
+            print("Confirmation window is already visible")
+            self.confirmation_window.raise_()
+            self.confirmation_window.activateWindow()
+            return
 
-        window.setStyleSheet(PastelGreen().get_style_sheet())
+        # Create a custom window
+        self.confirmation_window = QtWidgets.QDialog(self)
+        self.confirmation_window.setWindowTitle("Search Options")
+        self.confirmation_window.setStyleSheet(PastelGreen().get_style_sheet())
 
         # Create a vertical layout for the window
-        window_layout = QtWidgets.QVBoxLayout(window)
+        window_layout = QtWidgets.QVBoxLayout(self.confirmation_window)
 
         lex_suggestion_layout = QVBoxLayout()
         lex_suggestion_label = QLabel("Confirm moves:")
@@ -221,7 +228,7 @@ class FileExplorer(QWidget):
                                            " text-align: center;")
 
         window_layout.addLayout(lex_suggestion_layout)
-        window.resize(800, 600)
+        self.confirmation_window.resize(800, 600)
         suggestion_content_layout = QHBoxLayout()
         # Instead, use a QLabel with word wrap
         # Create a scroll area
@@ -234,7 +241,7 @@ class FileExplorer(QWidget):
 
         # Add the suggestion content to the widget
         suggestion_content_text = QtWidgets.QLabel(
-            "File one\nFile two\nFile three\nFile four"
+            "File one\nFile two\nFile three\nFile four\n"
         )
         suggestion_content_text.setWordWrap(True)
         suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
@@ -266,7 +273,6 @@ class FileExplorer(QWidget):
         dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
         dest_directory_layout.addWidget(dest_directory_text)
 
-
         suggestion_content_layout.addWidget(suggestion_content_graphic, 2)
         suggestion_content_layout.addLayout(dest_directory_layout, 2)
 
@@ -289,9 +295,15 @@ class FileExplorer(QWidget):
         button_layout.addWidget(cancel_button)
 
         window_layout.addLayout(button_layout)
+
         # Show the window and start its event loop
-        window.show()
-        window.exec_()
+        self.confirmation_window.show()
+        self.confirmation_window.exec()
+
+        self.confirmation_window.finished.connect(self.on_message_box_result)
+
+    def reset_confirmation_window(self):
+        self.confirmation_window = None
 
     def on_ok_clicked(self):
         print("Ok button clicked")
