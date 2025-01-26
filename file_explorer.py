@@ -114,11 +114,37 @@ class FileExplorer(QWidget):
         # Add titles for suggestion boxes
         lex_title = QLabel("Lexicographical Suggestion")
         context_title = QLabel("Contextual Suggestion")
-        lex_title.setStyleSheet("background-color: #8BA890; padding: 5px;")
-        context_title.setStyleSheet("background-color: #8BA890; padding: 5px;")
+
+        lex_title.setFixedHeight(25)
+        context_title.setFixedHeight(25)
+
+        lex_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
+        context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
 
         lex_layout.addWidget(lex_title)
         context_layout.addWidget(context_title)
+
+        def create_file_tree_widget():
+            tree_widget = QWidget()
+            tree_layout = QVBoxLayout(tree_widget)
+            tree_widget.setStyleSheet("background-color: #E6EDDB")
+            tree_widget.setContentsMargins(0,0,0,0)
+            
+            # Create folder icon and structure
+            folder_icon = QLabel("📁")
+            folder_icon.setStyleSheet("font-size: 24px;")
+            tree_layout.addWidget(folder_icon)
+            
+            # Add file structure lines
+            for i in range(6):
+                file_line = QLabel("└→📄 file_name")
+                file_line.setStyleSheet("padding-left: 20px;")
+                tree_layout.addWidget(file_line)
+            
+            return tree_widget
+
+        lex_layout.addWidget(create_file_tree_widget())
+        context_layout.addWidget(create_file_tree_widget())
 
         # Add suggestion boxes to content layout
         suggestions_content_layout.addWidget(lex_box)
@@ -269,3 +295,4 @@ class FileExplorer(QWidget):
 
     def on_message_box_result(self):
         self.show_custom_window()
+
