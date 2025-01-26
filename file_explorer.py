@@ -76,7 +76,7 @@ class FileExplorer(QWidget):
 
         # Set layout for the widget
         self.setLayout(self.main_layout)
-
+        self.resize(1080, 768)
     def on_checkbox_changed(self, state):
         # Handle checkbox state changes here
         print(f"Checkbox state changed to {state}")
