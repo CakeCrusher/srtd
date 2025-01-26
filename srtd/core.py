@@ -3,8 +3,9 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from .schema import FileObject
+import PyPDF2
 
 def objectify(entry: os.DirEntry) -> FileObject:
         return FileObject(
@@ -13,18 +14,60 @@ def objectify(entry: os.DirEntry) -> FileObject:
             is_directory= entry.is_dir(),
             created_at= int(entry.stat().st_ctime),
             ai_summary="",
-            string_content_truncated=""
+            string_content_truncated=create_truncated_content(entry.path)
         )
+
+def create_truncated_content(file_path: str, max_chars: int = 2000) -> str:
+    """Get truncated content from a file, supporting text and PDF files"""
+    if not os.path.exists(file_path):
+        return "[File not found]"
+        
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    try:
+        if file_ext == '.pdf':
+            return _read_pdf_content(file_path, max_chars)
+        else:
+            return _read_text_content(file_path, max_chars)
+    except Exception as e:
+        return f"[Error reading file: {str(e)}]"
+
+def _read_text_content(file_path: str, max_chars: int) -> str:
+    """Read content from text files"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read(max_chars)
+            if len(content) == max_chars:
+                content += "..."
+            return content
+    except UnicodeDecodeError:
+        return "[Binary file]"
+
+def _read_pdf_content(file_path: str, max_chars: int) -> str:
+    """Read content from PDF files"""
+    try:
+        with open(file_path, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            content = ""
+            for page in reader.pages:
+                content += page.extract_text()
+                if len(content) >= max_chars:
+                    return content[:max_chars] + "..."
+            return content
+    except Exception:
+        return "[Error reading PDF]"
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:
+    source_dir = os.path.expanduser(source_dir)
+
     # verify path passed in
     if not os.path.exists(source_dir):
         print(f"Path \"{source_dir}\" doesn't exist")
-        return
+        return []
     if not os.path.isdir(source_dir):
         print(f"Path \"{source_dir}\" is not a directory")
-        return
+        return []
 
     file_list = []
 
@@ -43,7 +86,6 @@ def buildFileList(source_dir) -> List[FileObject]:
 def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
     dir_list = []
 
-    print("dir to investigate: ", dir)
     if curr_depth > max_depth:
         return []
     # get directory object
@@ -54,7 +96,6 @@ def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
                 if (entry.is_symlink() or not entry.is_dir()):
                     continue
 
-                print(entry.name)
                 # only append the path to the list because that's all that we care about
                 dir_list.append(objectify(entry))
 
@@ -70,9 +111,7 @@ def buildDestinationList(allowed_dests: list[str]) -> list[FileObject]:
 
     for dest in allowed_dests:
         dest = os.path.expanduser(dest)
-        print(f"allowed dest is {dest}")
         if os.path.isdir(dest):
-            print("expanded")
             destination_list.extend(destinationHelper(dest, 0))
 
     return destination_list

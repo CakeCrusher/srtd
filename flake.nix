@@ -26,6 +26,7 @@
               weaviate-client
               openai
               python-dotenv
+              pypdf2
             ]
           ))
         ];
