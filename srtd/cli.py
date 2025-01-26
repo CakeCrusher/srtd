@@ -15,14 +15,14 @@ def main():
     file_list = core.buildFileList(source_dir)
 
     for file in file_list:
-        print(file['name'])
+        print(file.name)
 
     target = input("\nType string to match:\n> ")
 
     sorted = filter.getMatches(target, file_list)
 
     for file in sorted:
-        print(file['name'])
+        print(file.name)
 
 
 if __name__ == '__main__':
