@@ -11,6 +11,11 @@ In today's digital age, students face the challenge of managing vast amounts of 
 ---
 
 ## What It Does
+![image](https://github.com/user-attachments/assets/08c86c60-8b7e-405b-8aba-7fee6e1f2665)
+_Selecting files from home screen_
+
+![image](https://github.com/user-attachments/assets/4ce981a9-c70b-44f9-96a1-e7d38515ecce)
+_Transferring files_
 
 Srtd is an intelligent file management solution that simplifies and optimizes file organization:
 
@@ -24,6 +29,9 @@ Srtd automates tedious organizational tasks, empowering students and educators t
 ---
 
 ## How We Built It
+
+![image](https://github.com/user-attachments/assets/56ea36e6-f30b-4163-bb17-fee410a63b40)
+_UI design process_
 
 ### Tech Stack
 - **PySide6:** Provides a cross-platform graphical user interface for seamless user interaction.
@@ -47,6 +55,10 @@ Srtd automates tedious organizational tasks, empowering students and educators t
 ---
 
 ## Insights into Key Dependencies
+
+![image](https://github.com/user-attachments/assets/c038cadf-81a1-4ecf-b45b-7ad69fe4eff4)
+_UML diagram of the business logic_
+
 
 ### 1. **Weaviate**
    - **Purpose:** A vector database designed for semantic search and similarity-based queries.
