@@ -215,7 +215,9 @@ class FileExplorer(QWidget):
     def on_semantic_search_clicked(self):
         target = self.source_filter_textbox.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
-        # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
+        print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
+        combined = combine_lists(self.semantic_source_list, self.source_list)
+        self.source_tree.rerender_tree_layout(combined)
 
     def show_confirmation_window(self, file_name):
         if self.confirmation_window and self.confirmation_window.isVisible():
@@ -379,3 +381,22 @@ def cls():
 def stringify_file_list(file_list: List[FileObject]):
     # turn file list into list of strings of names
     return [file.name for file in file_list]
+
+# generated to match semantic and lexcial lists
+def combine_lists(priority_list, secondary_list):
+    seen = set()   # Set to keep track of items already added
+    combined_list = []
+
+    # Add items from the priority list first
+    for item in priority_list:
+        if item not in seen:
+            combined_list.append(item)
+            seen.add(item)
+
+    # Add items from the secondary list
+    for item in secondary_list:
+        if item not in seen:
+            combined_list.append(item)
+            seen.add(item)
+
+    return combined_list
