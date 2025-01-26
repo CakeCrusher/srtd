@@ -167,7 +167,8 @@ class FileExplorer(QWidget):
         # context_layout.addWidget(context_title)
 
         # get list of destinations for use
-        self.dest_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
+        # visible_files = [file for file in files if not file.name.startswith('.')]
+        self.dest_list = buildDestinationList(["~/Pictures", "~/Documents", "~/School", "~/School Example"])
         self.dest_view = FileTreeScrollView(self.dest_list, show_path=True, has_checkboxes=False)
         self.dest_view.file_clicked.connect(self.show_confirmation_window)
         dest_layout.addWidget(self.dest_view)

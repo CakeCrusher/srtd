@@ -83,7 +83,7 @@ def buildFileList(source_dir) -> List[FileObject]:
     return file_list
 
 # recursive helper for traversing filesystem
-def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
+def destinationHelper(dir: str, curr_depth: int, max_depth:int = 3):
     dir_list = []
 
     if curr_depth > max_depth:
@@ -93,14 +93,14 @@ def destinationHelper(dir: str, curr_depth: int, max_depth:int = 10):
         with os.scandir(os.path.abspath(dir)) as entries:
             for entry in entries:
                 # skip symlinks and regular files
-                if (entry.is_symlink() or not entry.is_dir()):
+                if (entry.is_symlink() or not entry.is_dir() or entry.name.startswith('.')):
                     continue
 
                 # only append the path to the list because that's all that we care about
                 dir_list.append(objectify(entry))
 
                 # recurse in and apply children
-                dir_list.extend(destinationHelper(entry.name, curr_depth+1))
+                dir_list.extend(destinationHelper(entry.path, curr_depth+1))
 
     return dir_list
 
