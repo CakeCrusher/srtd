@@ -8,4 +8,5 @@ tmp/
 *.egg
 build
 htmlcov
-.env
+.env*
+.direnv
