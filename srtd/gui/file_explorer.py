@@ -208,7 +208,7 @@ class FileExplorer(QWidget):
             print("Checkbox is checked")
 
     def on_semantic_search_clicked(self):
-        target = self.search_bar.text()
+        target = self.dest_bar.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
         # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
 
