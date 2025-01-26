@@ -40,7 +40,20 @@ class FileExplorer(QWidget):
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         # Create file tree view
         file_layout = QVBoxLayout()
+        # Create source selection area
+        source_selection_layout = QHBoxLayout()
+        source_selection_label = QLabel("Source Folder:")
+        source_selection_edit = QLineEdit()
+        source_select_button = QPushButton("Select folder")
 
+        # Connect source_select_button to update source directory and rebuild file list
+        source_select_button.clicked.connect(
+            lambda: self.on_source_folder_selected(source_selection_edit.text()))
+
+        source_selection_layout.addWidget(source_selection_label)
+        source_selection_layout.addWidget(source_selection_edit)
+        source_selection_layout.addWidget(source_select_button)
+        file_layout.addLayout(source_selection_layout)
         file_model = QFileSystemModel()
         file_model.setRootPath("")
         # file_tree = QTreeView()
@@ -313,6 +326,26 @@ class FileExplorer(QWidget):
         cls()
         print("\n".join(stringify_file_list(self.source_list)))
         print("> ", target)
+
+    def on_source_folder_selected(self, source_dir):
+        # Get the selected directory path
+        selected_dir = source_dir.strip()
+
+        # Validate and update source directory
+        if not selected_dir:
+            print("Please enter a source directory path")
+            return
+
+        # Call buildFileList to update the file list with the new directory
+        res = buildFileList(selected_dir)
+        if res is None:
+            return
+        self.source_list = res
+
+        # Update the file tree or other UI elements based on the new file list
+        # ... (your code to update UI)
+
+        print(f"Source directory updated to: {selected_dir}")
 
 
 def cls():

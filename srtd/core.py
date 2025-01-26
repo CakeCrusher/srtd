@@ -7,8 +7,6 @@ from .schema import FileObject
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:
-    print(f"Source dir is {source_dir}")
-
     # verify path passed in
     if not os.path.exists(source_dir):
         print(f"Path \"{source_dir}\" doesn't exist")
@@ -17,7 +15,7 @@ def buildFileList(source_dir) -> List[FileObject]:
         print(f"Path \"{source_dir}\" is not a directory")
         return
 
-    file_list = [];
+    file_list = []
 
     # get directory object
     with os.scandir(os.path.abspath(source_dir)) as entries:
