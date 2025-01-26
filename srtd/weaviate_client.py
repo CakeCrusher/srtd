@@ -8,6 +8,7 @@ from weaviate.classes.config import Property, DataType
 import os
 
 from schema import FileObject
+from openai_client import OpenAIClient
 
 
 class WeaviateClient:
@@ -65,15 +66,18 @@ class WeaviateClient:
             print(f"WeaviateClient upload_file Error: {e}")
             return False
         
-    def upsert_file(self, file: FileObject) -> bool:
+    def upsert_file(self, file: FileObject) -> FileObject:
         # check if file exists if it does do nothing otherwise upload it
         response = self.collection.query.fetch_objects(
-            limit=2,
+            limit=1,
             filters=Filter.by_property("path").equal(file.path)
         )
         if len(response.objects) > 0:
-            return False
+            print(f"{file.path}\t did not reupload, it already exists")
+            return FileObject(**response.objects[0].properties)
         else:
+            openai_client = OpenAIClient()
+            file.ai_summary = openai_client.file_summary(file)
             return self.upload_file(file)
 
     def semantic_search(self, query: str, limit: int = 10) -> List[tuple[FileObject, float]]:
