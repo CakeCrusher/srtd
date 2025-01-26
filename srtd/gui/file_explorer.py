@@ -113,27 +113,31 @@ class FileExplorer(QWidget):
 
         # Create suggestion boxes
         lex_box = QWidget()
-        context_box = QWidget()
+        # context_box = QWidget()
         lex_layout = QVBoxLayout(lex_box)
-        context_layout = QVBoxLayout(context_box)
+        # context_layout = QVBoxLayout(context_box)
 
-        lex_title = QLabel("Lexicographical Suggestion")
-        context_title = QLabel("Contextual Suggestion")
+        # Add titles for suggestion boxes
+        lex_title = QLabel("Destination Folders")
+        # context_title = QLabel("Contextual Suggestion")
 
         lex_title.setFixedHeight(25)
-        context_title.setFixedHeight(25)
+        # context_title.setFixedHeight(25)
 
         lex_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
-        context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
+        # context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
 
         lex_layout.addWidget(lex_title)
-        context_layout.addWidget(context_title)
+        # context_layout.addWidget(context_title)
 
-        lex_layout.addWidget(create_file_tree_scroll_view())
-        context_layout.addWidget(create_file_tree_scroll_view())
+        # get list of destinations for use
+        destination_list = buildDestinationList(["~/Documents", "~/Downloads", "~/School"])
+
+        lex_layout.addWidget(create_file_tree_scroll_view(destination_list, show_path=True))
+        # context_layout.addWidget(create_file_tree_scroll_view())
 
         suggestions_content_layout.addWidget(lex_box)
-        suggestions_content_layout.addWidget(context_box)
+        # suggestions_content_layout.addWidget(context_box)
 
         suggestions_layout.addWidget(suggestions_title)
         suggestions_layout.addWidget(suggestions_content)
