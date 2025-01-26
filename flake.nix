@@ -22,6 +22,7 @@
               # select Python packages here
               pyside6
               thefuzz
+              pydantic
             ]
           ))
         ];

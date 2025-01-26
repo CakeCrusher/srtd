@@ -56,7 +56,7 @@ class FileExplorer(QWidget):
         file_tree.setStyleSheet(PastelYellow().get_style_sheet())
 
         file_layout.addWidget(file_tree)
-        file_layout.addWidget(create_file_tree_scroll_view())
+        file_layout.addWidget(create_file_tree_scroll_view(self.source_list))
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
