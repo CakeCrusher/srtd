@@ -23,6 +23,7 @@ from ..filter import getMatches, getMatchesSemantic
 from .file_view import FileTreeScrollView
 
 from .themes import *
+from ..core import move_files
 
 
 class FileExplorer(QWidget):
@@ -291,7 +292,7 @@ class FileExplorer(QWidget):
         ok_button = QPushButton("Ok")
         cancel_button = QPushButton("Cancel")
 
-        ok_button.clicked.connect(self.on_yes_to_all_clicked)
+        ok_button.clicked.connect(self.ok_button_clicked)
         cancel_button.clicked.connect(self.on_cancel_clicked)
 
         button_layout.addWidget(ok_button)
@@ -307,8 +308,10 @@ class FileExplorer(QWidget):
     def reset_confirmation_window(self):
         self.confirmation_window = None
 
-    def on_yes_to_all_clicked(self):
-        print("Ok button clicked")
+    def ok_button_clicked(self):
+        print("Ok button clicked, trying to move files")
+        print(f"Files to move: {self.source_tree.get_checked_files()}")
+        move_files(self.source_tree.get_checked_files(), self.dest_directory_text.text())
 
     def on_cancel_clicked(self):
         print("Cancel button clicked")
@@ -333,8 +336,10 @@ class FileExplorer(QWidget):
             return
         res = buildFileList(selected_dir)
         if res is None:
+            print("Invalid source directory path")
             return
         self.source_list = res
+        print(f"res is {res} and has length {len(res)}")
         print(f"Source directory updated to: {selected_dir}")
 
 
