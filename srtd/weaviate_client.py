@@ -9,7 +9,7 @@ import os
 
 from schema import FileObject
 from openai_client import OpenAIClient
-
+from core import create_truncated_content
 
 class WeaviateClient:
     def __init__(self):
@@ -77,6 +77,7 @@ class WeaviateClient:
             return FileObject(**response.objects[0].properties)
         else:
             openai_client = OpenAIClient()
+            file.string_content_truncated = create_truncated_content(file.path)
             file.ai_summary = openai_client.file_summary(file)
             return self.upload_file(file)
 

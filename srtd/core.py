@@ -3,7 +3,8 @@
 import os
 from pathlib import Path
 from typing import List
-from .schema import FileObject
+from schema import FileObject
+import magic
 
 def objectify(entry: os.DirEntry) -> FileObject:
         return FileObject(
@@ -12,8 +13,28 @@ def objectify(entry: os.DirEntry) -> FileObject:
             is_directory= entry.is_dir(),
             created_at= int(entry.stat().st_ctime),
             ai_summary="",
-            string_content_truncated=""
+            string_content_truncated=create_truncated_content(entry.path)
         )
+
+def create_truncated_content(file_path: str) -> str:
+    try:
+        with open(file_path, "r") as f:
+            lines = f.readlines()[:1000]
+            truncated_content = "".join(lines)
+
+        mime_type = magic.from_file(file_path, mime=True)
+
+        if mime_type == "text/plain":
+            summary = truncated_content
+        else:
+            summary = f"File of type {mime_type}"
+
+        return summary
+
+    except FileNotFoundError:
+        return f"File {file_path} not found"
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
 
 # collect top-level files in provided source_dir
 def buildFileList(source_dir) -> List[FileObject]:
