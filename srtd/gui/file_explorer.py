@@ -40,8 +40,10 @@ class FileExplorer(QWidget):
         # Create layout for the file explorer
         self.main_layout = QHBoxLayout()
 
+        self.source_dir = "~/Downloads"
+
         # get file_list to work with
-        self.source_list = buildFileList(os.path.expanduser("~/Downloads"))
+        self.source_list = buildFileList(os.path.expanduser(self.source_dir))
         self.semantic_source_list = []
 
         # Create file tree view
@@ -50,6 +52,7 @@ class FileExplorer(QWidget):
         source_selection_layout = QHBoxLayout()
         source_selection_label = QLabel("Source Folder:")
         source_selection_edit = QLineEdit()
+        source_selection_edit.setText(self.source_dir)
         source_select_button = QPushButton("Select folder")
 
         # Connect source_select_button to update source directory and rebuild file list
@@ -216,7 +219,9 @@ class FileExplorer(QWidget):
     def on_semantic_search_clicked(self):
         target = self.source_filter_textbox.text()
         self.semantic_source_list = getMatchesSemantic(target, [])
-        # print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
+        print("Semantic search button clicked", [file.path for file in self.semantic_source_list])
+        combined = combine_lists(self.semantic_source_list, self.source_list)
+        self.source_tree.rerender_tree_layout(combined)
 
     def show_confirmation_window(self, file_name):
         if self.confirmation_window and self.confirmation_window.isVisible():
@@ -411,3 +416,22 @@ def cls():
 def stringify_file_list(file_list: List[FileObject]):
     # turn file list into list of strings of names
     return [file.name for file in file_list]
+
+# generated to match semantic and lexcial lists
+def combine_lists(priority_list, secondary_list):
+    seen = set()  # Set to keep track of names already added
+    combined_list = []
+
+    # Add items from the priority list first
+    for item in priority_list:
+        if item.name not in seen:
+            combined_list.append(item)
+            seen.add(item.name)
+
+    # Add items from the secondary list
+    for item in secondary_list:
+        if item.name not in seen:
+            combined_list.append(item)
+            seen.add(item.name)
+
+    return combined_list
