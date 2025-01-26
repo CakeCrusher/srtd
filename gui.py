@@ -6,6 +6,6 @@ from PySide6.QtWidgets import (
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = FileExplorer(app, Sand())
+    window = FileExplorer(app, PastelYellow())
     window.show()
     app.exec()
