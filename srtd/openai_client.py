@@ -11,8 +11,6 @@ from openai import OpenAI
 from schema import FileObject
 import os
 
-client = OpenAI()
-
 class FileSummaryGenerator(BaseModel):
     """
     A summary of the file content.

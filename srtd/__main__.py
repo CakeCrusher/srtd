@@ -21,15 +21,6 @@ def main(args=None):
     client = WeaviateClient()
     client.ensure_collection(os.getenv("COLLECTION_NAME"))
 
-    openai_client = OpenAIClient()
-    print(openai_client.file_summary(FileObject(
-        name="test.txt",
-        path=r"C:\Projects\srtd\srtd\__init__.py",  # Use raw string for Windows path
-        string_content_truncated="...",
-        is_directory=False,
-        created_at=0,
-        ai_summary="test"
-    )))
 
     # core.buildFileTree(source_dir)
 

@@ -33,14 +33,23 @@ class FileExplorer(QWidget):
         # get file_list to work with
         self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         # Create file tree view
+        file_layout = QVBoxLayout()
+
         file_model = QFileSystemModel()
         file_model.setRootPath("")
         file_tree = QTreeView()
         file_tree.setModel(file_model)
         file_tree.setRootIndex(file_model.index(""))
 
+        for i in range(1, file_model.columnCount()):
+            file_tree.hideColumn(i)
+
+        file_tree.setColumnWidth(0, file_tree.width())
+
         # Set tree view background color
-        file_tree.setStyleSheet(Sand().get_style_sheet())
+        file_tree.setStyleSheet(PastelYellow().get_style_sheet())
+
+        file_layout.addWidget(file_tree)
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -48,6 +57,7 @@ class FileExplorer(QWidget):
 
         # Add title
         preview_title = QLabel("Preview & Summary")
+        preview_title.setFixedHeight(25)
         preview_title.setStyleSheet(Sand().get_style_sheet())
 
         # Create preview content area
@@ -61,18 +71,16 @@ class FileExplorer(QWidget):
         preview_icon.setStyleSheet("font-size: 48px;")
         preview_icon.setStyleSheet("background-color: #B0E0E0;")
 
-
-
         # Create summary text
         summary_text = QLabel("Summary:\nLorem ipsum dolor sit amet, consectetur "
-                            "adipiscing elit. Sed do eiusmod tempor incididunt ut "
-                            "labore et dolore magna aliqua. Ut enim ad minim veniam, "
-                            "quis nostrud exercitation ullamco laboris nisi ut aliquip "
-                            "ex ea commodo consequat. Duis aute irure dolor in "
-                            "reprehenderit in voluptate velit esse cillum dolore eu "
-                            "fugiat nulla pariatur. Excepteur sint occaecat cupidatat "
-                            "non proident, sunt in culpa qui officia deserunt mollit "
-                            "anim id est laborum")
+                              "adipiscing elit. Sed do eiusmod tempor incididunt ut "
+                              "labore et dolore magna aliqua. Ut enim ad minim veniam, "
+                              "quis nostrud exercitation ullamco laboris nisi ut aliquip "
+                              "ex ea commodo consequat. Duis aute irure dolor in "
+                              "reprehenderit in voluptate velit esse cillum dolore eu "
+                              "fugiat nulla pariatur. Excepteur sint occaecat cupidatat "
+                              "non proident, sunt in culpa qui officia deserunt mollit "
+                              "anim id est laborum")
         summary_text.setWordWrap(True)
 
         # Stack icon and preview
@@ -86,10 +94,72 @@ class FileExplorer(QWidget):
         # Add everything to main preview layout
         preview_layout.addWidget(preview_title)
         preview_layout.addWidget(preview_content)
+        preview_content.setMaximumHeight(240)
 
+        # ---------Suggestions Section ------------
+        # Create suggestions section
+        suggestions_layout = QVBoxLayout()
 
-        # Combine preview and search into a single layout
+        suggestions_title = QLabel("Suggestions")
+        suggestions_title.setFixedHeight(25)
+        suggestions_title.setStyleSheet(Sand().get_style_sheet())
+
+        # Create suggestions content area
+        suggestions_content = QWidget()
+        suggestions_content_layout = QHBoxLayout(suggestions_content)
+
+        # Create lexicographical and contextual suggestion boxes
+        lex_box = QWidget()
+        context_box = QWidget()
+        lex_layout = QVBoxLayout(lex_box)
+        context_layout = QVBoxLayout(context_box)
+
+        # Add titles for suggestion boxes
+        lex_title = QLabel("Lexicographical Suggestion")
+        context_title = QLabel("Contextual Suggestion")
+
+        lex_title.setFixedHeight(25)
+        context_title.setFixedHeight(25)
+
+        lex_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
+        context_title.setStyleSheet("background-color: #8BA890; padding: 3px;")
+
+        lex_layout.addWidget(lex_title)
+        context_layout.addWidget(context_title)
+
+        def create_file_tree_widget():
+            tree_widget = QWidget()
+            tree_layout = QVBoxLayout(tree_widget)
+            tree_widget.setStyleSheet("background-color: #E6EDDB")
+            tree_widget.setContentsMargins(0, 0, 0, 0)
+
+            # Create folder icon and structure
+            folder_icon = QLabel("📁")
+            folder_icon.setStyleSheet("font-size: 24px;")
+            tree_layout.addWidget(folder_icon)
+
+            # Add file structure lines
+            for i in range(6):
+                file_line = QLabel("└→📄 file_name")
+                file_line.setStyleSheet("padding-left: 20px;")
+                tree_layout.addWidget(file_line)
+
+            return tree_widget
+
+        lex_layout.addWidget(create_file_tree_widget())
+        context_layout.addWidget(create_file_tree_widget())
+
+        # Add suggestion boxes to content layout
+        suggestions_content_layout.addWidget(lex_box)
+        suggestions_content_layout.addWidget(context_box)
+
+        # Add everything to suggestions layout
+        suggestions_layout.addWidget(suggestions_title)
+        suggestions_layout.addWidget(suggestions_content)
+
+        # -----Combine preview and search into a single layout----
         right_column_layout.addLayout(preview_layout)
+        right_column_layout.addLayout(suggestions_layout)
 
         # Create search bar
         search_layout = QHBoxLayout()
@@ -107,31 +177,16 @@ class FileExplorer(QWidget):
         self.search_bar.textChanged.connect(self.on_text_changed)
 
         # Create checkbox
-        self.checkbox = QCheckBox("Track State")
-        self.checkbox.setChecked(True)
-        self.checkbox.stateChanged.connect(self.on_checkbox_changed)
-
         # Connect search button click to show message box
-        search_button.clicked.connect(self.show_custom_window)
+        search_button.clicked.connect(self.show_confirmation_window)
 
-        # Create splitter to resize the file tree and preview area
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(file_tree)
-        splitter.addWidget(QWidget())  # Add the right column layout here for preview and search
-
-        # Set initial splitter sizes to 65% (file tree) and 35% (preview)
-        total_width = self.width()  # Get the total width of the window
-        file_tree_width = int(total_width * 0.65)  # 65% of total width
-        preview_area_width = total_width - file_tree_width  # 35% of total width
-        splitter.setSizes([file_tree_width, preview_area_width])
-
-        # Add layouts to the main layout
-        self.main_layout.addWidget(splitter)
-        self.main_layout.addLayout(right_column_layout)  # Add right column layout (preview and search)
-        self.main_layout.addWidget(self.checkbox)  # Add checkbox to the main layout
+        # Set size ratios for layouts in the main layout
+        self.main_layout.addLayout(file_layout, 4)
+        self.main_layout.addLayout(right_column_layout, 6)
 
         # Set layout for the widget
         self.setLayout(self.main_layout)
+        self.setStyleSheet(Sand().get_style_sheet())
         self.resize(1080, 768)
 
     def on_checkbox_changed(self, state):
@@ -145,7 +200,7 @@ class FileExplorer(QWidget):
         else:
             print("Checkbox is checked")
 
-    def show_custom_window(self):
+    def show_confirmation_window(self):
         # Create a custom window
         window = QtWidgets.QDialog()
         window.setWindowTitle("Search Options")
@@ -153,63 +208,63 @@ class FileExplorer(QWidget):
         # Create a vertical layout for the window
         window_layout = QtWidgets.QVBoxLayout(window)
 
-
-        lex_suggestion_layout = QHBoxLayout()
+        lex_suggestion_layout = QVBoxLayout()
         lex_suggestion_label = QLabel("Lexical Suggestions:")
+        lex_suggestion_label.setFixedHeight(25)
         lex_suggestion_layout.addWidget(lex_suggestion_label)
-
-        theme = ForestGreen()
-        lex_suggestion_label.setStyleSheet(
-            f"background-color: {theme.secondary_color}; color: {theme.primary_color};")
+        lex_suggestion_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lex_suggestion_label.setStyleSheet(ForestGreen().get_style_sheet() +
+                                           "font-weight: bold;"
+                                           " font-size: 20px;"
+                                           " text-align: center;")
 
         window_layout.addLayout(lex_suggestion_layout)
-
-        # Create a QLabel with long text
-        text_label = QtWidgets.QLabel(
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-            "This is a long text that will be displayed in the popup box.\n"
-            "It will automatically scroll if it exceeds the available space.\n"
-            "You can add more lines of text here as needed."
-        )
-
+        window.resize(800, 600)
+        suggestion_content_layout = QHBoxLayout()
+        # Instead, use a QLabel with word wrap
+        # Create a scroll area
         scroll_area = QtWidgets.QScrollArea()
-        scroll_area.setWidget(text_label)
-        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidgetResizable(True)  # Allow the widget inside to resize
 
-        # Add the scroll area to the window layout
-        window_layout.addWidget(scroll_area)
+        # Create a widget to hold the content
+        content_widget = QtWidgets.QWidget()
+        content_layout = QVBoxLayout(content_widget)
+
+        # Add the suggestion content to the widget
+        suggestion_content_text = QtWidgets.QLabel(
+            "File one\nFile two\nFile three\nFile four"
+        )
+        suggestion_content_text.setWordWrap(True)
+        suggestion_content_text.setStyleSheet(PastelGreen().get_style_sheet())
+        content_layout.addWidget(suggestion_content_text)
+
+        # Set the content widget for the scroll area
+        scroll_area.setWidget(content_widget)
+
+        # Add the scroll area to the layout
+        suggestion_content_graphic = QtWidgets.QLabel("→")
+        suggestion_content_layout.addWidget(scroll_area, 5)
+
+
+        dest_directory_layout = QVBoxLayout()
+        dest_directory_layout.setSpacing(0)
+        dest_directory_image = QtWidgets.QLabel("📁")
+        dest_directory_image.setStyleSheet("font-size: 24px;")
+        dest_directory_layout.addWidget(dest_directory_image)
+
+        dest_directory_text = QtWidgets.QLabel("Destination Directory TODO:")
+        dest_directory_text.setWordWrap(True)
+        dest_directory_text.setStyleSheet(PastelGreen().get_style_sheet())
+        dest_directory_layout.addWidget(dest_directory_text)
+
+
+        suggestion_content_layout.addWidget(suggestion_content_graphic, 2)
+        suggestion_content_layout.addLayout(dest_directory_layout, 2)
+
+
+
+        # Add the label directly to the layout
+        window_layout.addLayout(suggestion_content_layout)
 
         # Create individual buttons
         ok_button = QPushButton("Ok")
@@ -225,29 +280,23 @@ class FileExplorer(QWidget):
         window_layout.addWidget(ok_button)
         window_layout.addWidget(yes_to_all_button)
         window_layout.addWidget(cancel_button)
-
         # Show the window and start its event loop
         window.show()
         window.exec_()
 
-
     def on_ok_clicked(self):
         print("Ok button clicked")
-
 
     def on_yes_to_all_clicked(self):
         print("Yes to All button clicked")
 
-
     def on_cancel_clicked(self):
         print("Cancel button clicked")
 
-
     def on_message_box_result(self):
-        self.show_custom_window()
+        self.show_confirmation_window()
 
 
-# Now, to clear the screen
     def on_text_changed(self):
         target = self.search_bar.text()
         # business logic

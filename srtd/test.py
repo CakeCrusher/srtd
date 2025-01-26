@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-import core
-import filter
+from dotenv import load_dotenv
+from semantic_file_matching import SemanticFileMatching
 
-# print(core.buildDestinationList(["/home/paul/Pictures"]))
-# print(core.buildDestinationList(["/home/paul/School"]))
+load_dotenv()
 
-for file in filter.getMatches("scree", core.buildFileList("/home/paul/Pictures")):
-    print(file['name'])
+semantic_file_matching = SemanticFileMatching()
+results = semantic_file_matching.match_files("computer", [])
+for result in results:
+    print(result.ai_summary)
+    

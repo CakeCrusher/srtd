@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QApplication
 
 class Theme:
     def __init__(self):
-        self.primary_color = "#ffffff"  # Set primary color to white
+        self.primary_color = "#000000"  # Set primary color to white
         self.secondary_color = "#cccccc"
         self.font_family = "Arial"
         self.font_size = "14px"
@@ -17,8 +17,7 @@ class Theme:
 class ForestGreen(Theme):
     def __init__(self):
         super().__init__()
-        self.primary_color = "#228B22"  # Forest green
-        self.secondary_color = "#32CD32"  # Lime green
+        self.secondary_color = "#828f73"
 
 
 class SkyBlue(Theme):
@@ -33,3 +32,13 @@ class Sand(Theme):
         super().__init__()
         self.primary_color = "#ffffff"  # Set primary color to white
         self.secondary_color = "#EEE8AA"  # Pale goldenrod
+
+class PastelYellow(Theme):
+    def __init__(self):
+        super().__init__()
+        self.secondary_color = "#f8f3e7"  # Pale goldenrod
+
+class PastelGreen(Theme):
+    def __init__(self):
+        super().__init__()
+        self.secondary_color = "#dbe7ce"
