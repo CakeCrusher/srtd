@@ -7,9 +7,12 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QLabel, QHBoxLayout, QCheckBox, QScrollArea
 )
+from typing import List
+from ..schema import FileObject
 
 from .themes import *
 from ..schema import FileObject
+
 
 class FileTreeScrollView(QScrollArea):
     def __init__(self, file_list=[], bg_color_stylesheet=None, show_path=False, parent=None):
