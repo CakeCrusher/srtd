@@ -14,9 +14,13 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 
+from themes import *
+
+
 class FileExplorer(QWidget):
-    def __init__(self, theme):
+    def __init__(self, app, theme=Sand()):
         super().__init__()
+        self.app = app
         self.theme = theme
 
         # Set the theme
@@ -29,12 +33,9 @@ class FileExplorer(QWidget):
         file_tree = QTreeView()
         file_tree.setModel(file_model)
         file_tree.setRootIndex(file_model.index(""))
-        file_tree.hideColumn(1)
-        file_tree.hideColumn(2)
-        file_tree.hideColumn(3)
 
         # Set tree view background color
-        file_tree.setStyleSheet(f"background-color: {theme.secondary_color};")
+        file_tree.setStyleSheet(Sand().get_style_sheet())
 
         right_column_layout = QVBoxLayout()
         # Create file preview area
@@ -106,6 +107,17 @@ class FileExplorer(QWidget):
         # Create a vertical layout for the window
         window_layout = QtWidgets.QVBoxLayout(window)
 
+
+        lex_suggestion_layout = QHBoxLayout()
+        lex_suggestion_label = QLabel("Lexical Suggestions:")
+        lex_suggestion_layout.addWidget(lex_suggestion_label)
+
+        theme = ForestGreen()
+        lex_suggestion_label.setStyleSheet(
+            f"background-color: {theme.secondary_color}; color: {theme.primary_color};")
+
+        window_layout.addLayout(lex_suggestion_layout)
+
         # Create a QLabel with long text
         text_label = QtWidgets.QLabel(
             "This is a long text that will be displayed in the popup box.\n"
@@ -144,12 +156,11 @@ class FileExplorer(QWidget):
             "This is a long text that will be displayed in the popup box.\n"
             "It will automatically scroll if it exceeds the available space.\n"
             "You can add more lines of text here as needed."
-
         )
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(text_label)
-        scroll_area.setWidgetResizable(True)  # Allow the widget to resize within the scroll area
+        scroll_area.setWidgetResizable(True)
 
         # Add the scroll area to the window layout
         window_layout.addWidget(scroll_area)
