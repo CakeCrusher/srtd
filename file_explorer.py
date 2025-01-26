@@ -43,7 +43,7 @@ class FileExplorer(QWidget):
 
         # Add title
         preview_title = QLabel("Preview & Summary")
-        preview_title.setStyleSheet("background-color: #FFE4C4; padding: 5px;")
+        preview_title.setStyleSheet(Sand().get_style_sheet())
 
         # Create preview content area
         preview_content = QWidget()

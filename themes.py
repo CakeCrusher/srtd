@@ -1,21 +1,17 @@
 from PySide6.QtWidgets import QApplication
 
-from PySide6.QtWidgets import QApplication
-
-
 class Theme:
     def __init__(self):
-        self.primary_color = "#000000"
+        self.primary_color = "#ffffff"  # Set primary color to white
         self.secondary_color = "#cccccc"
         self.font_family = "Arial"
         self.font_size = "14px"
 
     def get_style_sheet(self) -> str:
-        return (f"color: {self.primary_color};"
+        return (f"color: black;"  # Set text color to black
                 f" background-color: {self.secondary_color};"
                 f" font-family: {self.font_family};"
                 f" font-size: {self.font_size};")
-
 
 
 class ForestGreen(Theme):
@@ -35,5 +31,5 @@ class SkyBlue(Theme):
 class Sand(Theme):
     def __init__(self):
         super().__init__()
-        self.primary_color = "#000000"  # Beige
+        self.primary_color = "#ffffff"  # Set primary color to white
         self.secondary_color = "#EEE8AA"  # Pale goldenrod
