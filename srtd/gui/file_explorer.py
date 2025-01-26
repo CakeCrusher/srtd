@@ -14,8 +14,11 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 
-from themes import *
+import os
+from ..core import buildFileList, buildDestinationList
+from ..filter import getMatches
 
+from .themes import *
 
 class FileExplorer(QWidget):
     def __init__(self, app, theme=Sand()):
@@ -27,6 +30,8 @@ class FileExplorer(QWidget):
         # Create layout for the file explorer
         self.main_layout = QHBoxLayout()
 
+        # get file_list to work with
+        self.source_list = buildFileList(os.path.expanduser("~/Pictures"))
         # Create file tree view
         file_layout = QVBoxLayout()
 
@@ -158,15 +163,18 @@ class FileExplorer(QWidget):
 
         # Create search bar
         search_layout = QHBoxLayout()
-        search_label = QLabel("Search:")
-        search_bar = QLineEdit()
-        search_button = QPushButton("Search")
+        search_label = QLabel("Filter Files:")
+        self.search_bar = QLineEdit()
+        search_button = QPushButton("Select Destination")
         search_layout.addWidget(search_label)
-        search_layout.addWidget(search_bar)
+        search_layout.addWidget(self.search_bar)
         search_layout.addWidget(search_button)
 
         # Add search bar layout
         right_column_layout.addLayout(search_layout)
+
+        # handle search bar changes
+        self.search_bar.textChanged.connect(self.on_text_changed)
 
         # Create checkbox
         # Connect search button click to show message box
@@ -287,3 +295,23 @@ class FileExplorer(QWidget):
 
     def on_message_box_result(self):
         self.show_confirmation_window()
+
+
+    def on_text_changed(self):
+        target = self.search_bar.text()
+        # business logic
+        self.source_list = getMatches(target, self.source_list)
+
+        # debug cli output
+        cls()
+        print("\n".join(stringify_file_list(self.source_list)))
+        print("> ", target)
+
+
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+
+def stringify_file_list(file_list: str):
+    # turn file list into list of strings of names
+    return [file['name'] for file in file_list if 'name' in file]
