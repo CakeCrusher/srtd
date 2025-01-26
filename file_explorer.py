@@ -84,9 +84,45 @@ class FileExplorer(QWidget):
         preview_layout.addWidget(preview_content)
         preview_content.setMaximumHeight(240)
 
+        #---------Suggestions Section ------------
+        # Create suggestions section
+        suggestions_layout = QVBoxLayout()
 
-        # Combine preview and search into a single layout
+        suggestions_title = QLabel("Suggestions")
+        suggestions_title.setFixedHeight(25)
+        suggestions_title.setStyleSheet(Sand().get_style_sheet())
+
+        # Create suggestions content area
+        suggestions_content = QWidget()
+        suggestions_content_layout = QHBoxLayout(suggestions_content)
+
+        # Create lexicographical and contextual suggestion boxes
+        lex_box = QWidget()
+        context_box = QWidget()
+        lex_layout = QVBoxLayout(lex_box)
+        context_layout = QVBoxLayout(context_box)
+
+        # Add titles for suggestion boxes
+        lex_title = QLabel("Lexicographical Suggestion")
+        context_title = QLabel("Contextual Suggestion")
+        lex_title.setStyleSheet("background-color: #8BA890; padding: 5px;")
+        context_title.setStyleSheet("background-color: #8BA890; padding: 5px;")
+
+        lex_layout.addWidget(lex_title)
+        context_layout.addWidget(context_title)
+
+        # Add suggestion boxes to content layout
+        suggestions_content_layout.addWidget(lex_box)
+        suggestions_content_layout.addWidget(context_box)
+
+        # Add everything to suggestions layout
+        suggestions_layout.addWidget(suggestions_title)
+        suggestions_layout.addWidget(suggestions_content)
+
+
+        # -----Combine preview and search into a single layout----
         right_column_layout.addLayout(preview_layout)
+        right_column_layout.addLayout(suggestions_layout)
 
         # Create search bar
         search_layout = QHBoxLayout()
